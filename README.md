@@ -2,7 +2,7 @@
 
 Eine interaktive Formelsammlung für Mechatroniker, Elektroniker, Techniker und Ingenieure. Läuft im Browser und auf dem Handy, ohne Installation.
 
-**👉 Live:** https://tobias-hauser.github.io/formelsammlung/
+**👉 Live:** https://mechatronik-dev.de/formelsammlung/ (Teil von [MechatronikerDev](https://mechatronik-dev.de))
 
 ![Rechner](bilder/rechner.jpg)
 
