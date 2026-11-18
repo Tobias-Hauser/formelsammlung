@@ -55,11 +55,11 @@ button.sekundaer { background: var(--linie); color: var(--text); }
 button.link { background: none; border: 0; color: var(--akzent); cursor: pointer; padding: 0; font-size: .88rem; }
 
 /* Hinweise */
-.tipp { background: var(--tipp-bg); color: var(--tipp-text); border-radius: 10px; padding: 10px 14px; font-size: .92rem; line-height: 1.6; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.tipp { background: var(--tipp-bg); color: var(--tipp-text); border-radius: 10px; padding: 10px 14px; font-size: .92rem; line-height: 1.9; }
 .tipp.fertig { background: var(--ok-bg); color: var(--ok); }
 .tipp:empty { display: none; }
 .warnung { background: var(--warn-bg); color: var(--warn); border-radius: 10px; padding: 10px 14px; font-size: .92rem; margin-bottom: 6px; line-height: 1.5; }
-.tipp-chip { color: var(--text); }
+.tipp-chip { color: var(--text); margin: 0 4px 0 0; }
 .tipp-chip small { color: var(--grau); }
 
 /* Felder */
