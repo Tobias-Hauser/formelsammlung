@@ -23,17 +23,29 @@ Im Tabellenbuch sucht man erst die richtige Formel, stellt sie dann um und rechn
 
 ## Inhalt
 
+**157 Formeln in 36 Bereichen.**
+
 **Praxis-Aufgaben** (mehrere Bereiche kombiniert)
 
 | Aufgabe | Was herauskommt |
 |---|---|
 | Förderband auslegen | Reibkraft, Leistung, Übersetzung, Momente an Trommel und Motor |
 | Motorzuleitung prüfen | Strom, Spannungsfall in V und %, Leitungsverluste |
+| Abschaltbedingung prüfen | Abschaltstrom, max. Schleifenimpedanz, Ausnutzung am Leitungsende |
 | Zylinder für eine Last | Nötiger Kolbendurchmesser, Luftverbrauch |
 | Wasser oder Öl erwärmen | Aufheizzeit, Energie, Kosten |
 | Energiekosten einer Maschine | kWh und € pro Jahr |
+| Lohnt sich ein Effizienzmotor? | Ersparnis pro Jahr, Amortisationszeit |
 
-**Grundlagen:** Gleichstrom & Ohm · Widerstandsschaltungen · Leitung & Spannungsfall · Wechselstrom 1~ · Drehstrom 3~ · Kondensator & Spule · Drehstrommotor · Kraft & Bewegung · Drehbewegung · Getriebe & Riementrieb · Pneumatik & Hydraulik · Festigkeit · Wärme & Temperatur · Sensorik & SPS (4…20 mA, 0…10 V, S7-Analogwert, PT100/PT1000) · Instandhaltungs-Kennzahlen (MTBF, MTTR, Verfügbarkeit, OEE)
+**Grundlagen**
+
+| Gebiet | Bereiche |
+|---|---|
+| Elektrotechnik | Gleichstrom & Ohm · Widerstandsschaltungen · Leitung & Spannungsfall · Wechselstrom 1~ · Drehstrom 3~ · Stern & Dreieck · Blindstromkompensation · Kondensator & Spule (mit Ladekurve) · Schwingkreis & RLC · Transformator · LED & Gleichrichter · Drehstrommotor |
+| Mechanik | Kraft & Bewegung · Beschleunigte Bewegung · Hebel, Flaschenzug, schiefe Ebene, Feder · Drehbewegung · Massenträgheit & Hochlauf · Getriebe & Riementrieb · Zahnrad & Gewindespindel · Festigkeit · Biegung, Torsion, Pressung · Zerspanung & Gewinde |
+| Fluidtechnik & Wärme | Pneumatik & Hydraulik · Hydraulikpumpe & Druckluft · Wärme & Temperatur |
+| Automatisierung | Sensorik & SPS (4…20 mA, 0…10 V, S7-Analogwert, PT100/PT1000, Drehgeber) · Regelungstechnik (P-Regler, PT1) |
+| Instandhaltung | Kennzahlen (MTBF, MTTR, Verfügbarkeit, OEE) · Wälzlager-Lebensdauer L10h |
 
 Unter **„Alle Formeln“** gibt es die komplette Sammlung zum Durchsuchen und Ausdrucken.
 

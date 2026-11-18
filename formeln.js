@@ -318,6 +318,254 @@
       f: ['mtbf', 'mttr', 'lam', 'verf', 'oee'], bsp: { TB: 2000, nA: 8, TR: 12, Lf: 90, Qf: 98 } }
   ];
 
+  /* ---------- Erweiterung: weitere Bereiche ---------- */
+  const A_ = [['A', 1], ['mA', 1e-3]];
+  const VOLT = [['V', 1], ['kV', 1e3]];
+  const NM = [['Nm', 1]];
+  Object.assign(V, {
+    RStr: { s: 'R<sub>Str</sub>', n: 'Strangwiderstand', u: OHM },
+    IY: { s: 'I<sub>Y</sub>', n: 'Leiterstrom in Stern', u: A_ },
+    ID: { s: 'I<sub>Δ</sub>', n: 'Leiterstrom in Dreieck', u: A_ },
+    PY: { s: 'P<sub>Y</sub>', n: 'Leistung in Stern', u: KW },
+    PD: { s: 'P<sub>Δ</sub>', n: 'Leistung in Dreieck', u: KW },
+    cos1: { s: 'cos φ<sub>1</sub>', n: 'Leistungsfaktor vorher', u: OHNE, p: [['0,7', 0.7], ['0,8', 0.8]] },
+    cos2: { s: 'cos φ<sub>2</sub>', n: 'Leistungsfaktor Ziel', u: OHNE, p: [['0,9', 0.9], ['0,95', 0.95]] },
+    QC: { s: 'Q<sub>C</sub>', n: 'Nötige Kondensatorleistung', u: [['kvar', 1e3], ['var', 1]] },
+    CD: { s: 'C<sub>Δ</sub>', n: 'Kapazität je Kondensator (Dreieck)', u: [['µF', 1e-6]] },
+    f0: { s: 'f<sub>0</sub>', n: 'Resonanzfrequenz', u: [['Hz', 1], ['kHz', 1e3]] },
+    U1: { s: 'U<sub>1</sub>', n: 'Primärspannung', u: VOLT, p: [['230', 230], ['400', 400]] },
+    U2: { s: 'U<sub>2</sub>', n: 'Sekundärspannung', u: VOLT, p: [['24', 24], ['230', 230]] },
+    N1: { s: 'N<sub>1</sub>', n: 'Windungen primär', u: OHNE },
+    N2: { s: 'N<sub>2</sub>', n: 'Windungen sekundär', u: OHNE },
+    I1: { s: 'I<sub>1</sub>', n: 'Strom primär', u: A_ },
+    I2: { s: 'I<sub>2</sub>', n: 'Strom sekundär', u: A_ },
+    ue: { s: 'ü', n: 'Übersetzungsverhältnis', u: OHNE },
+    St: { s: 'S', n: 'Bemessungsleistung', u: [['VA', 1], ['kVA', 1e3]] },
+    uk: { s: 'u<sub>k</sub>', n: 'Kurzschlussspannung', u: PROZ, p: [['4 %', 4], ['6 %', 6]] },
+    Ik: { s: 'I<sub>k</sub>', n: 'Dauerkurzschlussstrom sekundär', u: [['A', 1], ['kA', 1e3]] },
+    UB: { s: 'U<sub>B</sub>', n: 'Betriebsspannung', u: [['V', 1]], p: [['5 V', 5], ['12 V', 12], ['24 V', 24]] },
+    UF: { s: 'U<sub>F</sub>', n: 'Durchlassspannung LED', u: [['V', 1]], p: [['rot 2,0', 2], ['grün 2,2', 2.2], ['weiß/blau 3,2', 3.2]] },
+    IF: { s: 'I<sub>F</sub>', n: 'LED-Strom', u: [['mA', 1e-3], ['A', 1]], p: [['10 mA', 10], ['20 mA', 20]] },
+    RV: { s: 'R<sub>V</sub>', n: 'Vorwiderstand', u: OHM },
+    PRV: { s: 'P<sub>R</sub>', n: 'Verlustleistung Vorwiderstand', u: [['W', 1], ['mW', 1e-3]] },
+    Uw: { s: 'U', n: 'Effektivwert Wechselspannung', u: [['V', 1]], p: [['230', 230], ['400', 400]] },
+    Us_: { s: 'û', n: 'Scheitelwert', u: [['V', 1]] },
+    Ud2: { s: 'U<sub>d,B2</sub>', n: 'Gleichspannung Brücke B2 (1~)', u: [['V', 1]] },
+    Ud6: { s: 'U<sub>d,B6</sub>', n: 'Gleichspannung Brücke B6 (3~)', u: [['V', 1]] },
+    U0: { s: 'U<sub>0</sub>', n: 'Spannung gegen Erde', u: [['V', 1]], p: [['230 V', 230]] },
+    In: { s: 'I<sub>n</sub>', n: 'Nennstrom Schutzorgan', u: [['A', 1]], p: [['10', 10], ['13', 13], ['16', 16], ['20', 20], ['32', 32]] },
+    kAus: { s: 'k', n: 'Faktor Abschaltstrom', u: OHNE, p: [['B: 5', 5], ['C: 10', 10]] },
+    Ia: { s: 'I<sub>a</sub>', n: 'Abschaltstrom (unverzögert)', u: [['A', 1]] },
+    Zsmax: { s: 'Z<sub>s,max</sub>', n: 'Max. zulässige Schleifenimpedanz', u: OHM },
+    Zn: { s: 'Z<sub>V</sub>', n: 'Schleifenimpedanz an der Verteilung', u: OHM, p: [['0,3 Ω', 0.3], ['0,5 Ω', 0.5]] },
+    Zs: { s: 'Z<sub>s</sub>', n: 'Schleifenimpedanz am Leitungsende', u: OHM },
+    ausZ: { s: 'Z<sub>s</sub>/Z<sub>s,max</sub>', n: 'Ausnutzung', u: PROZ },
+    uc: { s: 'u<sub>C</sub>(t)', n: 'Kondensatorspannung nach Zeit t', u: [['V', 1]] },
+    tL: { s: 't', n: 'Ladezeit', u: [['ms', 1e-3], ['s', 1]] },
+    rhoM: { s: 'ρ', n: 'Dichte', u: [['kg/dm³', 1e3], ['kg/m³', 1]], p: [['Wasser 1,0', 1], ['Öl 0,87', 0.87], ['Alu 2,7', 2.7], ['Stahl 7,85', 7.85]] },
+    Vol: { s: 'V', n: 'Volumen', u: [['l (dm³)', 1e-3], ['cm³', 1e-6], ['m³', 1]] },
+    F1: { s: 'F<sub>1</sub>', n: 'Kraft 1', u: NEWTON },
+    F2: { s: 'F<sub>2</sub>', n: 'Kraft 2', u: NEWTON },
+    l1: { s: 'l<sub>1</sub>', n: 'Hebelarm 1', u: MM },
+    l2: { s: 'l<sub>2</sub>', n: 'Hebelarm 2', u: MM },
+    nSeil: { s: 'n', n: 'Tragende Seilstränge', u: OHNE, p: [['2', 2], ['4', 4], ['6', 6]] },
+    FZ: { s: 'F<sub>Z</sub>', n: 'Zugkraft am Seil', u: NEWTON },
+    winkel: { s: 'α', n: 'Neigungswinkel', u: [['°', PI / 180]] },
+    FH: { s: 'F<sub>H</sub>', n: 'Hangabtriebskraft', u: NEWTON },
+    Fzug: { s: 'F<sub>Zug</sub>', n: 'Zugkraft aufwärts (mit Reibung)', u: NEWTON },
+    cF: { s: 'c', n: 'Federrate', u: [['N/mm', 1e3]] },
+    sF: { s: 's', n: 'Federweg', u: [['mm', 1e-3]] },
+    FF: { s: 'F', n: 'Federkraft', u: NEWTON },
+    v0: { s: 'v<sub>0</sub>', n: 'Anfangsgeschwindigkeit', u: [['m/s', 1], ['m/min', 1 / 60], ['km/h', 1 / 3.6]] },
+    J: { s: 'J', n: 'Massenträgheitsmoment', u: [['kg·m²', 1]] },
+    alphaW: { s: 'α', n: 'Winkelbeschleunigung', u: [['1/s²', 1]] },
+    MB: { s: 'M<sub>B</sub>', n: 'Beschleunigungsmoment', u: NM },
+    ta: { s: 't<sub>a</sub>', n: 'Hochlaufzeit', u: [['s', 1], ['ms', 1e-3]] },
+    modul: { s: 'm', n: 'Modul', u: [['mm', 1e-3]], p: [['1', 1], ['1,5', 1.5], ['2', 2], ['3', 3]] },
+    dz1: { s: 'd<sub>1</sub>', n: 'Teilkreis Rad 1', u: MM },
+    dz2: { s: 'd<sub>2</sub>', n: 'Teilkreis Rad 2', u: MM },
+    aA: { s: 'a', n: 'Achsabstand', u: MM },
+    Ph: { s: 'P<sub>h</sub>', n: 'Spindelsteigung', u: [['mm', 1e-3]], p: [['5 mm', 5], ['10 mm', 10], ['20 mm', 20]] },
+    vSp: { s: 'v', n: 'Vorschubgeschwindigkeit Spindel', u: [['mm/s', 1e-3], ['m/min', 1 / 60], ['m/s', 1]] },
+    MSp: { s: 'M', n: 'Antriebsmoment Spindel', u: NM },
+    FSp: { s: 'F', n: 'Vorschubkraft Spindel', u: NEWTON },
+    lK: { s: 'l', n: 'Hebellänge (Kragarm)', u: MM },
+    Mb: { s: 'M<sub>b</sub>', n: 'Biegemoment', u: NM },
+    Wb: { s: 'W', n: 'Widerstandsmoment Biegung', u: [['mm³', 1e-9], ['cm³', 1e-6]] },
+    sigb: { s: 'σ<sub>b</sub>', n: 'Biegespannung', u: NMM2 },
+    Mt: { s: 'M<sub>t</sub>', n: 'Torsionsmoment', u: NM },
+    Wp: { s: 'W<sub>p</sub>', n: 'Polares Widerstandsmoment', u: [['mm³', 1e-9], ['cm³', 1e-6]] },
+    taut: { s: 'τ<sub>t</sub>', n: 'Torsionsspannung', u: NMM2 },
+    Fp: { s: 'F', n: 'Kraft auf Auflagefläche', u: NEWTON },
+    Ap: { s: 'A', n: 'Auflagefläche', u: [['mm²', 1e-6], ['cm²', 1e-4]] },
+    pF: { s: 'p', n: 'Flächenpressung', u: NMM2 },
+    vc: { s: 'v<sub>c</sub>', n: 'Schnittgeschwindigkeit', u: [['m/min', 1 / 60]], p: [['Stahl HSS 25', 25], ['Alu HSS 60', 60], ['Stahl HM 150', 150]] },
+    dW: { s: 'd', n: 'Werkzeug-/Werkstückdurchmesser', u: [['mm', 1e-3]] },
+    fV: { s: 'f', n: 'Vorschub je Umdrehung', u: [['mm', 1e-3]], p: [['0,1', 0.1], ['0,15', 0.15], ['0,2', 0.2]] },
+    vf: { s: 'v<sub>f</sub>', n: 'Vorschubgeschwindigkeit', u: [['mm/min', 1e-3 / 60]] },
+    Lh: { s: 'L', n: 'Vorschubweg', u: [['mm', 1e-3]] },
+    th: { s: 't<sub>h</sub>', n: 'Hauptnutzungszeit', u: [['min', 60], ['s', 1]] },
+    DG: { s: 'D', n: 'Gewinde-Nenndurchmesser', u: [['mm', 1e-3]], p: [['M5', 5], ['M6', 6], ['M8', 8], ['M10', 10], ['M12', 12]] },
+    PG: { s: 'P', n: 'Gewindesteigung', u: [['mm', 1e-3]], p: [['0,8', 0.8], ['1', 1], ['1,25', 1.25], ['1,5', 1.5], ['1,75', 1.75]] },
+    dKL: { s: 'd<sub>K</sub>', n: 'Kernlochbohrer', u: [['mm', 1e-3]] },
+    Vg: { s: 'V<sub>g</sub>', n: 'Fördervolumen pro Umdrehung', u: [['cm³', 1e-6]] },
+    etaV: { s: 'η<sub>vol</sub>', n: 'Volumetrischer Wirkungsgrad', u: PROZ, p: [['95 %', 95]] },
+    etaGes: { s: 'η<sub>ges</sub>', n: 'Gesamtwirkungsgrad Pumpe', u: PROZ, p: [['85 %', 85]] },
+    PAn: { s: 'P<sub>An</sub>', n: 'Antriebsleistung Pumpe', u: KW },
+    dR: { s: 'd<sub>R</sub>', n: 'Rohr-Innendurchmesser', u: [['mm', 1e-3]] },
+    vR: { s: 'v', n: 'Strömungsgeschwindigkeit', u: [['m/s', 1]] },
+    p1: { s: 'p<sub>1</sub>', n: 'Druck 1 (absolut)', u: [['bar', 1e5]] },
+    V1: { s: 'V<sub>1</sub>', n: 'Volumen 1', u: [['l', 1e-3], ['m³', 1]] },
+    p2: { s: 'p<sub>2</sub>', n: 'Druck 2 (absolut)', u: [['bar', 1e5]], p: [['Umgebung 1,013', 1.013]] },
+    V2: { s: 'V<sub>2</sub>', n: 'Volumen 2', u: [['l', 1e-3], ['m³', 1]] },
+    zImp: { s: 'z', n: 'Impulse pro Umdrehung', u: OHNE, p: [['100', 100], ['500', 500], ['1024', 1024], ['2048', 2048]] },
+    fEnc: { s: 'f', n: 'Impulsfrequenz', u: [['Hz', 1], ['kHz', 1e3]] },
+    dRad: { s: 'd', n: 'Messrad-Durchmesser', u: [['mm', 1e-3]] },
+    sImp: { s: 'Δs', n: 'Weg pro Impuls', u: [['mm', 1e-3], ['µm', 1e-6]] },
+    wS: { s: 'w', n: 'Sollwert', u: OHNE, neg: true },
+    xI: { s: 'x', n: 'Istwert', u: OHNE, neg: true },
+    eR: { s: 'e', n: 'Regelabweichung', u: OHNE, neg: true },
+    Kp: { s: 'K<sub>P</sub>', n: 'Proportionalbeiwert', u: OHNE },
+    yP: { s: 'y', n: 'Stellgröße (P-Anteil)', u: OHNE, neg: true },
+    xInf: { s: 'x<sub>∞</sub>', n: 'Endwert nach Sprung', u: OHNE, neg: true },
+    T1: { s: 'T', n: 'Zeitkonstante Strecke', u: [['s', 1], ['min', 60]] },
+    tSp: { s: 't', n: 'Zeit seit dem Sprung', u: [['s', 1], ['min', 60]] },
+    xt: { s: 'x(t)', n: 'Wert zur Zeit t', u: OHNE, neg: true },
+    Cdyn: { s: 'C', n: 'Dynamische Tragzahl', u: [['kN', 1e3], ['N', 1]] },
+    Plag: { s: 'P', n: 'Äquivalente Lagerbelastung', u: [['kN', 1e3], ['N', 1]] },
+    pExp: { s: 'p', n: 'Lebensdauerexponent', u: OHNE, p: [['Kugellager 3', 3], ['Rollenlager 10/3', 10 / 3]] },
+    L10: { s: 'L<sub>10</sub>', n: 'Lebensdauer in Mio. Umdrehungen', u: OHNE },
+    L10h: { s: 'L<sub>10h</sub>', n: 'Lebensdauer in Betriebsstunden', u: [['h', 3600]] },
+    eta1: { s: 'η<sub>alt</sub>', n: 'Wirkungsgrad alter Motor', u: PROZ, p: [['IE1 ca. 87,6 %', 87.6]] },
+    eta2: { s: 'η<sub>neu</sub>', n: 'Wirkungsgrad neuer Motor', u: PROZ, p: [['IE3 ca. 91,4 %', 91.4], ['IE4 ca. 93,3 %', 93.3]] },
+    Walt: { s: 'W<sub>alt</sub>', n: 'Energie alter Motor pro Jahr', u: [['kWh', 3.6e6]] },
+    Wneu: { s: 'W<sub>neu</sub>', n: 'Energie neuer Motor pro Jahr', u: [['kWh', 3.6e6]] },
+    dK: { s: 'ΔK', n: 'Ersparnis pro Jahr', u: [['€', 1]] },
+    Inv: { s: 'K<sub>M</sub>', n: 'Mehrpreis neuer Motor', u: [['€', 1]] },
+    tA: { s: 't<sub>A</sub>', n: 'Amortisationszeit', u: [['Jahre', 1], ['Monate', 1 / 12]] }
+  });
+
+  // Elektro
+  fx('y_i', 'Leiterstrom Stern', 'I<sub>Y</sub> = U / (√3 · R<sub>Str</sub>)', 'IY', ['U', 'RStr'], v => v.U / (W3 * v.RStr));
+  fx('d_i', 'Leiterstrom Dreieck', 'I<sub>Δ</sub> = √3 · U / R<sub>Str</sub>', 'ID', ['U', 'RStr'], v => W3 * v.U / v.RStr, 'Im Dreieck fließt der dreifache Leiterstrom wie in Stern.');
+  fx('y_p', 'Leistung Stern', 'P<sub>Y</sub> = U² / R<sub>Str</sub>', 'PY', ['U', 'RStr'], v => v.U * v.U / v.RStr);
+  fx('d_p', 'Leistung Dreieck', 'P<sub>Δ</sub> = 3 · U² / R<sub>Str</sub>', 'PD', ['U', 'RStr'], v => 3 * v.U * v.U / v.RStr, 'Gleiche Widerstände in Dreieck: dreifache Leistung wie in Stern.');
+  fx('komp_q', 'Kompensationsleistung', 'Q<sub>C</sub> = P · (tan φ<sub>1</sub> − tan φ<sub>2</sub>)', 'QC', ['P', 'cos1', 'cos2'], v => v.P * (Math.tan(Math.acos(v.cos1)) - Math.tan(Math.acos(v.cos2))));
+  fx('komp_c', 'Kondensator in Dreieck', 'C<sub>Δ</sub> = Q<sub>C</sub> / (3 · U² · 2π · f)', 'CD', ['QC', 'U', 'f'], v => v.QC / (3 * v.U * v.U * 2 * PI * v.f), 'In Stern geschaltet braucht man die dreifache Kapazität.');
+  fx('rlc_z', 'Scheinwiderstand Reihenschwingkreis', 'Z = √(R² + (X<sub>L</sub> − X<sub>C</sub>)²)', 'Z', ['R', 'XL', 'XC'], v => Math.sqrt(v.R * v.R + (v.XL - v.XC) ** 2), 'Bei Resonanz ist X<sub>L</sub> = X<sub>C</sub> und Z = R.');
+  fx('rlc_cos', 'Leistungsfaktor RLC', 'cos φ = R / Z', 'cosphi', ['R', 'Z'], v => v.R / v.Z);
+  fx('f0', 'Resonanzfrequenz', 'f<sub>0</sub> = 1 / (2π · √(L · C))', 'f0', ['L', 'C'], v => 1 / (2 * PI * Math.sqrt(v.L * v.C)));
+  fx('tr_u', 'Spannungsübersetzung', 'ü = U<sub>1</sub> / U<sub>2</sub>', 'ue', ['U1', 'U2'], v => v.U1 / v.U2);
+  fx('tr_n', 'Windungsverhältnis', 'ü = N<sub>1</sub> / N<sub>2</sub>', 'ue', ['N1', 'N2'], v => v.N1 / v.N2);
+  fx('tr_i', 'Stromübersetzung', 'I<sub>1</sub> = I<sub>2</sub> / ü', 'I1', ['I2', 'ue'], v => v.I2 / v.ue, 'Idealer Transformator ohne Verluste.');
+  fx('tr_s', 'Bemessungsleistung', 'S = U<sub>2</sub> · I<sub>2</sub>', 'St', ['U2', 'I2'], v => v.U2 * v.I2);
+  fx('tr_ik', 'Kurzschlussstrom', 'I<sub>k</sub> = I<sub>2</sub> / u<sub>k</sub>', 'Ik', ['I2', 'uk'], v => v.I2 / v.uk, 'Mit I<sub>2</sub> als Bemessungsstrom und starrem Netz.');
+  fx('led', 'LED-Vorwiderstand', 'R<sub>V</sub> = (U<sub>B</sub> − U<sub>F</sub>) / I<sub>F</sub>', 'RV', ['UB', 'UF', 'IF'], v => (v.UB - v.UF) / v.IF, 'Nächsten größeren Normwert (E12) nehmen.');
+  fx('led_p', 'Verlustleistung Vorwiderstand', 'P<sub>R</sub> = (U<sub>B</sub> − U<sub>F</sub>) · I<sub>F</sub>', 'PRV', ['UB', 'UF', 'IF'], v => (v.UB - v.UF) * v.IF);
+  fx('scheitel', 'Scheitelwert', 'û = √2 · U', 'Us_', ['Uw'], v => Math.SQRT2 * v.Uw);
+  fx('b2', 'Brückengleichrichter B2', 'U<sub>d</sub> = 0,9 · U', 'Ud2', ['Uw'], v => 0.9 * v.Uw, 'Mittelwert ohne Glättung. Mit Glättungskondensator nahe û.');
+  fx('b6', 'Drehstrombrücke B6', 'U<sub>d</sub> = 1,35 · U', 'Ud6', ['Uw'], v => 1.35 * v.Uw, 'U ist hier die Außenleiterspannung (400 V → 540 V).');
+  fx('abs_ia', 'Abschaltstrom', 'I<sub>a</sub> = k · I<sub>n</sub>', 'Ia', ['kAus', 'In'], v => v.kAus * v.In, 'LS-Schalter B: 5 · I<sub>n</sub>, C: 10 · I<sub>n</sub> (sicher unverzögert)');
+  fx('abs_zs', 'Abschaltbedingung', 'Z<sub>s,max</sub> = U<sub>0</sub> / I<sub>a</sub>', 'Zsmax', ['U0', 'Ia'], v => v.U0 / v.Ia, 'Bedingung: Z<sub>s</sub> · I<sub>a</sub> ≤ U<sub>0</sub>');
+  fx('abs_zl', 'Schleifenimpedanz am Ende', 'Z<sub>s</sub> = Z<sub>V</sub> + 2 · l / (κ · A)', 'Zs', ['Zn', 'l', 'kappa', 'AL'], v => v.Zn + 2 * v.l / (v.kappa * v.AL), 'Rechenwert. Leitererwärmung erhöht den Widerstand, deshalb Reserve lassen. Die Messung ersetzt die Rechnung nicht.');
+  fx('abs_aus', 'Ausnutzung', 'Ausnutzung = Z<sub>s</sub> / Z<sub>s,max</sub>', 'ausZ', ['Zs', 'Zsmax'], v => v.Zs / v.Zsmax, 'Über 100 %: Abschaltbedingung nicht erfüllt.');
+  fx('ladung', 'Ladekurve Kondensator', 'u<sub>C</sub>(t) = U · (1 − e<sup>−t/τ</sup>)', 'uc', ['U', 'tL', 'tauC'], v => v.U * (1 - Math.exp(-v.tL / v.tauC)));
+  // Mechanik
+  fx('dichte', 'Masse aus Volumen', 'm = ρ · V', 'm', ['rhoM', 'Vol'], v => v.rhoM * v.Vol);
+  fx('hebel', 'Hebelgesetz', 'F<sub>1</sub> · l<sub>1</sub> = F<sub>2</sub> · l<sub>2</sub>', 'F2', ['F1', 'l1', 'l2'], v => v.F1 * v.l1 / v.l2);
+  fx('flaschenzug', 'Flaschenzug', 'F<sub>Z</sub> = F<sub>G</sub> / (n · η)', 'FZ', ['FG', 'nSeil', 'eta'], v => v.FG / (v.nSeil * v.eta));
+  fx('hang', 'Hangabtriebskraft', 'F<sub>H</sub> = F<sub>G</sub> · sin α', 'FH', ['FG', 'winkel'], v => v.FG * Math.sin(v.winkel));
+  fx('hang_n', 'Normalkraft schiefe Ebene', 'F<sub>N</sub> = F<sub>G</sub> · cos α', 'FN', ['FG', 'winkel'], v => v.FG * Math.cos(v.winkel));
+  fx('hang_zug', 'Zugkraft aufwärts', 'F<sub>Zug</sub> = F<sub>H</sub> + F<sub>R</sub>', 'Fzug', ['FH', 'FR'], v => v.FH + v.FR);
+  fx('feder', 'Federkraft', 'F = c · s', 'FF', ['cF', 'sF'], v => v.cF * v.sF);
+  fx('bes_v', 'Geschwindigkeit nach Zeit t', 'v = v<sub>0</sub> + a · t', 'v', ['v0', 'a', 't'], v => v.v0 + v.a * v.t);
+  fx('bes_s', 'Weg bei Beschleunigung', 's = v<sub>0</sub> · t + ½ · a · t²', 's', ['v0', 'a', 't'], v => v.v0 * v.t + 0.5 * v.a * v.t * v.t);
+  fx('j_zyl', 'Trägheit Vollzylinder', 'J = m · d² / 8', 'J', ['m', 'd'], v => v.m * v.d * v.d / 8, 'Für volle Walzen, Scheiben und Trommeln.');
+  fx('alpha_w', 'Winkelbeschleunigung', 'α = ω / t<sub>a</sub>', 'alphaW', ['omega', 'ta'], v => v.omega / v.ta);
+  fx('mb', 'Beschleunigungsmoment', 'M<sub>B</sub> = J · α', 'MB', ['J', 'alphaW'], v => v.J * v.alphaW, 'Kommt beim Anfahren zum Lastmoment dazu.');
+  fx('zr_d1', 'Teilkreis Rad 1', 'd<sub>1</sub> = m · z<sub>1</sub>', 'dz1', ['modul', 'z1'], v => v.modul * v.z1);
+  fx('zr_d2', 'Teilkreis Rad 2', 'd<sub>2</sub> = m · z<sub>2</sub>', 'dz2', ['modul', 'z2'], v => v.modul * v.z2);
+  fx('zr_a', 'Achsabstand', 'a = m · (z<sub>1</sub> + z<sub>2</sub>) / 2', 'aA', ['modul', 'z1', 'z2'], v => v.modul * (v.z1 + v.z2) / 2);
+  fx('sp_v', 'Vorschub Gewindespindel', 'v = P<sub>h</sub> · n', 'vSp', ['Ph', 'n'], v => v.Ph * v.n);
+  fx('sp_f', 'Vorschubkraft Spindel', 'F = 2π · M · η / P<sub>h</sub>', 'FSp', ['MSp', 'eta', 'Ph'], v => 2 * PI * v.MSp * v.eta / v.Ph, 'η Kugelgewindetrieb ca. 90 %, Trapezgewinde ca. 30 bis 50 %.');
+  fx('mb_f', 'Biegemoment Kragarm', 'M<sub>b</sub> = F · l', 'Mb', ['F', 'lK'], v => v.F * v.lK);
+  fx('wb', 'Widerstandsmoment Rundstab', 'W = π · d³ / 32', 'Wb', ['dS'], v => PI * v.dS ** 3 / 32);
+  fx('sigb', 'Biegespannung', 'σ<sub>b</sub> = M<sub>b</sub> / W', 'sigb', ['Mb', 'Wb'], v => v.Mb / v.Wb);
+  fx('wp', 'Polares Widerstandsmoment Rundstab', 'W<sub>p</sub> = π · d³ / 16', 'Wp', ['dS'], v => PI * v.dS ** 3 / 16);
+  fx('taut', 'Torsionsspannung', 'τ<sub>t</sub> = M<sub>t</sub> / W<sub>p</sub>', 'taut', ['Mt', 'Wp'], v => v.Mt / v.Wp);
+  fx('pres', 'Flächenpressung', 'p = F / A', 'pF', ['Fp', 'Ap'], v => v.Fp / v.Ap);
+  // Werkstatt
+  fx('vc', 'Schnittgeschwindigkeit', 'v<sub>c</sub> = π · d · n', 'vc', ['dW', 'n'], v => PI * v.dW * v.n, 'Richtwerte für v<sub>c</sub> stehen im Tabellenbuch oder beim Werkzeughersteller.');
+  fx('vf', 'Vorschubgeschwindigkeit', 'v<sub>f</sub> = f · n', 'vf', ['fV', 'n'], v => v.fV * v.n);
+  fx('th', 'Hauptnutzungszeit', 't<sub>h</sub> = L / v<sub>f</sub>', 'th', ['Lh', 'vf'], v => v.Lh / v.vf);
+  fx('kernloch', 'Kernlochbohrer (metrisch)', 'd<sub>K</sub> = D − P', 'dKL', ['DG', 'PG'], v => v.DG - v.PG, 'M6 → 5,0 · M8 → 6,8 · M10 → 8,5 · M12 → 10,2');
+  // Fluid
+  fx('pumpe_q', 'Förderstrom Pumpe', 'Q = V<sub>g</sub> · n · η<sub>vol</sub>', 'QV', ['Vg', 'n', 'etaV'], v => v.Vg * v.n * v.etaV);
+  fx('pumpe_p', 'Antriebsleistung Pumpe', 'P<sub>An</sub> = p · Q / η<sub>ges</sub>', 'PAn', ['pd', 'QV', 'etaGes'], v => v.pd * v.QV / v.etaGes);
+  fx('rohr_v', 'Strömungsgeschwindigkeit', 'v = Q / (π · d<sub>R</sub>² / 4)', 'vR', ['QV', 'dR'], v => v.QV / (PI * v.dR * v.dR / 4), 'Richtwerte Hydraulik: Saugleitung 0,5 bis 1,5 m/s, Druckleitung 3 bis 6 m/s.');
+  fx('boyle', 'Boyle-Mariotte', 'p<sub>1</sub> · V<sub>1</sub> = p<sub>2</sub> · V<sub>2</sub>', 'V2', ['p1', 'V1', 'p2'], v => v.p1 * v.V1 / v.p2, 'Absolutdrücke einsetzen: Überdruck + 1 bar. Temperatur gleichbleibend.');
+  // Automatisierung
+  fx('enc_f', 'Impulsfrequenz Drehgeber', 'f = n · z', 'fEnc', ['n', 'zImp'], v => v.n * v.zImp, 'Muss zur Eingangsfrequenz der Zählerkarte passen.');
+  fx('enc_s', 'Auflösung Messrad', 'Δs = π · d / z', 'sImp', ['dRad', 'zImp'], v => PI * v.dRad / v.zImp, 'Mit 4-fach-Auswertung (A/B-Flanken) wird Δs viermal feiner.');
+  fx('reg_e', 'Regelabweichung', 'e = w − x', 'eR', ['wS', 'xI'], v => v.wS - v.xI);
+  fx('reg_p', 'P-Regler', 'y = K<sub>P</sub> · e', 'yP', ['Kp', 'eR'], v => v.Kp * v.eR, 'Ein reiner P-Regler behält eine bleibende Regelabweichung.');
+  fx('pt1', 'PT1-Strecke (Sprungantwort)', 'x(t) = x<sub>∞</sub> · (1 − e<sup>−t/T</sup>)', 'xt', ['xInf', 'tSp', 'T1'], v => v.xInf * (1 - Math.exp(-v.tSp / v.T1)), 'Nach 1 T: 63 %, nach 3 T: 95 %, nach 5 T: 99 %.');
+  // Lager & Wirtschaftlichkeit
+  fx('l10', 'Nominelle Lebensdauer', 'L<sub>10</sub> = (C / P)<sup>p</sup>', 'L10', ['Cdyn', 'Plag', 'pExp'], v => Math.pow(v.Cdyn / v.Plag, v.pExp), '90 % der Lager erreichen mindestens diese Lebensdauer.');
+  fx('l10h', 'Lebensdauer in Stunden', 'L<sub>10h</sub> = L<sub>10</sub> · 10⁶ / (60 · n)', 'L10h', ['L10', 'n'], v => v.L10 * 1e6 / v.n);
+  fx('eff_alt', 'Energie alter Motor', 'W<sub>alt</sub> = P<sub>ab</sub> · LF · t / η<sub>alt</sub>', 'Walt', ['Pab', 'LF', 't', 'eta1'], v => v.Pab * v.LF * v.t / v.eta1);
+  fx('eff_neu', 'Energie neuer Motor', 'W<sub>neu</sub> = P<sub>ab</sub> · LF · t / η<sub>neu</sub>', 'Wneu', ['Pab', 'LF', 't', 'eta2'], v => v.Pab * v.LF * v.t / v.eta2);
+  fx('eff_dk', 'Ersparnis pro Jahr', 'ΔK = (W<sub>alt</sub> − W<sub>neu</sub>) · k', 'dK', ['Walt', 'Wneu', 'k'], v => (v.Walt - v.Wneu) * v.k);
+  fx('eff_ta', 'Amortisationszeit', 't<sub>A</sub> = K<sub>M</sub> / ΔK', 'tA', ['Inv', 'dK'], v => v.Inv / v.dK);
+
+  // bestehende Bereiche ergänzen
+  const kz = id => KAT.find(k => k.id === id);
+  kz('kond').f.push('ladung'); kz('kond').bsp.tL = 470;
+  kz('mech').f.push('dichte');
+  kz('erwaermen').f.unshift('dichte'); delete kz('erwaermen').bsp.m; Object.assign(kz('erwaermen').bsp, { rhoM: 1, Vol: 80 });
+  kz('sensor').f.push('enc_f', 'enc_s'); Object.assign(kz('sensor').bsp, { zImp: 1024, n: 600, dRad: 100 });
+  kz('sensor').d = 'Analogsignale skalieren (4…20 mA, 0…10 V, S7-Digits), PT100/PT1000 und Drehgeber.';
+
+  KAT.push(
+    { id: 'abschaltung', gruppe: 'praxis', n: 'Abschaltbedingung prüfen', d: 'Löst der Leitungsschutzschalter am Leitungsende schnell genug aus? Schleifenimpedanz aus Leitungslänge und Querschnitt.',
+      f: ['abs_ia', 'abs_zs', 'abs_zl', 'abs_aus', 'kappa_rho'], bsp: { U0: 230, In: 16, kAus: 5, Zn: 0.4, l: 30, AL: 1.5, kappa: 56 } },
+    { id: 'effizienz', gruppe: 'praxis', n: 'Lohnt sich ein Effizienzmotor?', d: 'Alter gegen neuen Motor: Ersparnis pro Jahr und nach wie vielen Jahren sich der Mehrpreis rechnet.',
+      f: ['ek_t', 'eff_alt', 'eff_neu', 'eff_dk', 'eff_ta'], bsp: { Pab: 11, LF: 75, tTag: 16, Tage: 250, eta1: 87.6, eta2: 91.4, k: 0.25, Inv: 600 }, e: { t: 'h' } },
+    { id: 'sterndreieck', gruppe: 'grund', n: 'Stern & Dreieck', d: 'Gleiche Widerstände in Stern und in Dreieck: Ströme und Leistungen im Vergleich.',
+      f: ['y_i', 'd_i', 'y_p', 'd_p', 'ustr'], bsp: { U: 400, RStr: 50 } },
+    { id: 'kompensation', gruppe: 'grund', n: 'Blindstromkompensation', d: 'Wie viel Kondensatorleistung hebt den cos φ auf den Zielwert?',
+      f: ['komp_q', 'komp_c'], bsp: { P: 50, cos1: 0.7, cos2: 0.95, U: 400, f: 50 }, e: { P: 'kW' } },
+    { id: 'rlc', gruppe: 'grund', n: 'Schwingkreis & RLC', d: 'Reihenschaltung aus R, L und C: Scheinwiderstand, Strom, Leistungsfaktor und Resonanz.',
+      f: ['xl', 'xc', 'rlc_z', 'z', 'rlc_cos', 'f0'], bsp: { R: 100, L: 500, C: 20, f: 50, U: 230 } },
+    { id: 'trafo', gruppe: 'grund', n: 'Transformator', d: 'Übersetzung von Spannung, Strom und Windungen, Bemessungsleistung und Kurzschlussstrom.',
+      f: ['tr_u', 'tr_n', 'tr_i', 'tr_s', 'tr_ik'], bsp: { U1: 400, U2: 24, I2: 10, uk: 4, N1: 800 } },
+    { id: 'halbleiter', gruppe: 'grund', n: 'LED & Gleichrichter', d: 'Vorwiderstand für LEDs, Scheitelwert und Gleichrichter B2 und B6.',
+      f: ['led', 'led_p', 'scheitel', 'b2', 'b6'], bsp: { UB: 24, UF: 2, IF: 20, Uw: 230 } },
+    { id: 'hebel', gruppe: 'grund', n: 'Hebel, Flaschenzug, Feder', d: 'Hebelgesetz, Flaschenzug, schiefe Ebene mit Reibung und Federkraft.',
+      f: ['hebel', 'fg', 'flaschenzug', 'hang', 'hang_n', 'fr', 'hang_zug', 'feder'], bsp: { F1: 100, l1: 500, l2: 50, m: 200, nSeil: 4, eta: 90, winkel: 15, mu: 0.15, cF: 20, sF: 15 } },
+    { id: 'beschleunigt', gruppe: 'grund', n: 'Beschleunigte Bewegung', d: 'Gleichmäßig beschleunigt: Geschwindigkeit und Weg nach einer Zeit.',
+      f: ['bes_v', 'bes_s', 'fma'], bsp: { v0: 0, a: 0.5, t: 4, m: 100 } },
+    { id: 'hochlauf', gruppe: 'grund', n: 'Massenträgheit & Hochlauf', d: 'Welches Moment braucht eine Walze, um in der Hochlaufzeit auf Drehzahl zu kommen?',
+      f: ['j_zyl', 'omega', 'alpha_w', 'mb'], bsp: { m: 50, d: 300, n: 1450, ta: 2 } },
+    { id: 'zahnrad', gruppe: 'grund', n: 'Zahnrad & Gewindespindel', d: 'Teilkreise, Achsabstand und Übersetzung, dazu Vorschub und Kraft einer Gewindespindel.',
+      f: ['zr_d1', 'zr_d2', 'zr_a', 'i_z', 'sp_v', 'sp_f'], bsp: { modul: 2, z1: 20, z2: 60, Ph: 5, n: 600, MSp: 2, eta: 90 } },
+    { id: 'biegung', gruppe: 'grund', n: 'Biegung, Torsion, Pressung', d: 'Rundstab auf Biegung und Torsion, Flächenpressung.',
+      f: ['mb_f', 'wb', 'sigb', 'wp', 'taut', 'pres'], bsp: { F: 2, lK: 200, dS: 30, Mt: 100, Fp: 5000, Ap: 50 }, e: { F: 'kN' } },
+    { id: 'zerspanung', gruppe: 'grund', n: 'Zerspanung & Gewinde', d: 'Drehzahl aus Schnittgeschwindigkeit, Vorschub, Hauptzeit und Kernlochbohrer.',
+      f: ['vc', 'vf', 'th', 'kernloch'], bsp: { vc: 25, dW: 10, fV: 0.15, Lh: 30, DG: 10, PG: 1.5 } },
+    { id: 'pumpe', gruppe: 'grund', n: 'Hydraulikpumpe & Druckluft', d: 'Förderstrom und Antriebsleistung einer Pumpe, Strömung in der Leitung, Boyle-Mariotte.',
+      f: ['pumpe_q', 'pumpe_p', 'rohr_v', 'boyle'], bsp: { Vg: 16, n: 1450, etaV: 95, pd: 160, etaGes: 85, dR: 12, p1: 8, V1: 50, p2: 1.013 } },
+    { id: 'regelung', gruppe: 'grund', n: 'Regelungstechnik', d: 'Regelabweichung, P-Regler und Sprungantwort einer PT1-Strecke.',
+      f: ['reg_e', 'reg_p', 'pt1'], bsp: { wS: 60, xI: 55, Kp: 2, xInf: 80, T1: 10, tSp: 10 } },
+    { id: 'lager', gruppe: 'grund', n: 'Wälzlager-Lebensdauer', d: 'Nominelle Lebensdauer L10 in Umdrehungen und Betriebsstunden.',
+      f: ['l10', 'l10h'], bsp: { Cdyn: 30, Plag: 3, pExp: 3, n: 1450 } }
+  );
+  const REIHE = ['band', 'zuleitung', 'abschaltung', 'hubzylinder', 'erwaermen', 'energiekosten', 'effizienz',
+    'gleich', 'widerstand', 'leitung', 'wechsel', 'dreh', 'sterndreieck', 'kompensation', 'kond', 'rlc', 'trafo', 'halbleiter', 'motor',
+    'mech', 'beschleunigt', 'hebel', 'drehbew', 'hochlauf', 'getriebe', 'zahnrad', 'festigkeit', 'biegung', 'zerspanung',
+    'zylinder', 'pumpe', 'waerme', 'sensor', 'regelung', 'kennzahlen', 'lager'];
+  KAT.sort((a, b) => REIHE.indexOf(a.id) - REIHE.indexOf(b.id));
+
   /* ---------- Löser ---------- */
   const RASTER = [];
   for (let e = -15; e <= 15.0001; e += 0.05) RASTER.push(Math.pow(10, e));
