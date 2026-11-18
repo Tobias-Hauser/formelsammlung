@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formelsammlung Mechatronik</title>
+<meta name="description" content="Interaktive Formelsammlung für Mechatroniker: Gib ein, was du weißt, der Rest wird mit Rechenweg berechnet.">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<header>
+  <div class="wrap kopf">
+    <div>
+      <h1>Formelsammlung Mechatronik</h1>
+      <p class="sub">Gib ein, was du weißt. Der Rest wird berechnet, mit Rechenweg.</p>
+    </div>
+    <nav>
+      <button data-view="rechner" class="aktiv">Rechner</button>
+      <button data-view="alle">Alle Formeln</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Rechner -->
+  <section id="view-rechner" class="layout">
+    <aside class="seite">
+      <input id="suche" type="search" placeholder="Suchen: Drehmoment, PT100, Schlupf …" autocomplete="off">
+      <select id="katWahl" aria-label="Bereich wählen"></select>
+      <div id="katListe"></div>
+    </aside>
+
+    <div class="inhalt">
+      <div class="karte kat-kopf">
+        <div>
+          <span class="gruppe" id="katGruppe"></span>
+          <h2 id="katTitel"></h2>
+          <p class="meta" id="katText"></p>
+        </div>
+        <div class="aktionen">
+          <button class="primaer" id="beispiel">Beispiel laden</button>
+          <button class="sekundaer" id="leeren">Leeren</button>
+          <button class="sekundaer" id="teilen">Link kopieren</button>
+        </div>
+      </div>
+
+      <div id="tipp" class="tipp"></div>
+      <div id="konflikte"></div>
+      <div id="felder" class="felder"></div>
+
+      <div class="unten">
+        <div class="karte">
+          <h3>Rechenweg</h3>
+          <ol id="rechenweg" class="rechenweg"></ol>
+        </div>
+        <div class="karte">
+          <h3>Formeln in diesem Bereich</h3>
+          <ul id="formeln" class="formelliste"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alle Formeln -->
+  <section id="view-alle" hidden>
+    <div class="alle-kopf">
+      <input id="sucheAlle" type="search" placeholder="Formel oder Größe suchen …" autocomplete="off">
+      <button class="sekundaer" id="drucken">Drucken / als PDF</button>
+    </div>
+    <div id="alleListe" class="alle"></div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p>Entwickelt von <b>Tobias Hauser</b>, Mechatroniker (IHK) aus Freiburg, mit KI-Unterstützung. Richtwerte ohne Gewähr, im Zweifel gilt das Tabellenbuch.
+  · <a href="https://github.com/Tobias-Hauser/formelsammlung">Code auf GitHub</a></p>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script src="formeln.js?v=1"></script>
+<script src="app.js?v=1"></script>
+</body>
+</html>
