@@ -270,12 +270,14 @@
   /* =====================================================================
      3. Schrauben: metrisches ISO-Regelgewinde
      ===================================================================== */
-  // d, P, Durchgangsloch mittel (ISO 273), SW Sechskant (ISO 4017), SW Innensechskant (ISO 4762), Kopf-Ø Zylinderkopf
+  // d, P, Durchgangsloch mittel (ISO 273), SW Sechskant (ISO 4017), SW Innensechskant (ISO 4762), Kopf-Ø Zylinderkopf,
+  // Auflage-Ø dw min Sechskant (ISO 4017), dw min Zylinderkopf (ISO 4762), Durchgangsloch fein (ISO 273) für die Reibung nach VDI 2230
   const SCHRAUBEN = [
-    [3, 0.5, 3.4, 5.5, 2.5, 5.5], [4, 0.7, 4.5, 7, 3, 7], [5, 0.8, 5.5, 8, 4, 8.5], [6, 1, 6.6, 10, 5, 10],
-    [8, 1.25, 9, 13, 6, 13], [10, 1.5, 11, 16, 8, 16], [12, 1.75, 13.5, 18, 10, 18], [14, 2, 15.5, 21, 12, 21],
-    [16, 2, 17.5, 24, 14, 24], [18, 2.5, 20, 27, 14, 27], [20, 2.5, 22, 30, 17, 30], [22, 2.5, 24, 34, 17, 33],
-    [24, 3, 26, 36, 19, 36], [27, 3, 30, 41, 19, 40], [30, 3.5, 33, 46, 22, 45]
+    [3, 0.5, 3.4, 5.5, 2.5, 5.5, 4.57, 5.07, 3.2], [4, 0.7, 4.5, 7, 3, 7, 5.88, 6.53, 4.3], [5, 0.8, 5.5, 8, 4, 8.5, 6.88, 8.03, 5.3],
+    [6, 1, 6.6, 10, 5, 10, 8.88, 9.38, 6.4], [8, 1.25, 9, 13, 6, 13, 11.63, 12.33, 8.4], [10, 1.5, 11, 16, 8, 16, 14.63, 15.33, 10.5],
+    [12, 1.75, 13.5, 18, 10, 18, 16.63, 17.23, 13], [14, 2, 15.5, 21, 12, 21, 19.64, 20.17, 15], [16, 2, 17.5, 24, 14, 24, 22.49, 23.17, 17],
+    [18, 2.5, 20, 27, 14, 27, 25.34, 25.87, 19], [20, 2.5, 22, 30, 17, 30, 28.19, 28.87, 21], [22, 2.5, 24, 34, 17, 33, 31.71, 31.81, 23],
+    [24, 3, 26, 36, 19, 36, 33.61, 34.81, 25], [27, 3, 30, 41, 19, 40, 38, 38.4, 28], [30, 3.5, 33, 46, 22, 45, 42.75, 43.61, 31]
   ];
   const KLASSEN = { '8.8': d => (d <= 16 ? 640 : 660), '10.9': () => 940, '12.9': () => 1100, 'A2-70': () => 450, 'A4-80': () => 600 };
   const KLASSEN_TAB = [
@@ -301,16 +303,15 @@
       schreib('sK', kSel.value); schreib('sM', mSel.value); schreib('sH', kopf.value);
       const mu = Number(mSel.value);
       let h = '<table class="wz-tab wz-schr"><thead><tr><th>Gewinde</th><th>P</th><th>d<sub>2</sub></th><th>d<sub>3</sub></th><th>A<sub>S</sub> mm²</th><th>Kernloch</th><th>Durchgangsloch</th><th>SW</th><th>SW Inbus</th><th>F<sub>M</sub> kN</th><th>M<sub>A</sub> Nm</th></tr></thead><tbody>';
-      for (const [d, P, dh, sw, swi, dk] of SCHRAUBEN) {
-        const dw = kopf.value === '6k' ? sw : dk;
-        const r = schraubeRechnen(d, P, KLASSEN[kSel.value](d), mu, dw, dh);
+      for (const [d, P, dh, sw, swi, dk, dw6, dwZ, dhF] of SCHRAUBEN) {
+        const r = schraubeRechnen(d, P, KLASSEN[kSel.value](d), mu, kopf.value === '6k' ? dw6 : dwZ, dhF);
         h += `<tr><th>M${d}</th><td>${de(P)}</td><td>${de(r.d2, 3)}</td><td>${de(r.d3, 3)}</td><td>${de(r.As, 1)}</td><td>${de(d - P, 2)}</td><td>${de(dh, 1)}</td><td>${de(sw, 1)}</td><td>${de(swi)}</td><td><b>${de(r.FM / 1000, 1)}</b></td><td><b>${de(r.MA, r.MA < 10 ? 1 : 0)}</b></td></tr>`;
       }
       aus.innerHTML = h + '</tbody></table>';
     }
     kSel.onchange = neu; mSel.onchange = neu; kopf.onchange = neu;
     neu();
-    box.appendChild(el('p', 'meta wz-quelle', 'F<sub>M</sub> und M<sub>A</sub> nach VDI 2230 mit 90 % Ausnutzung der Streckgrenze. Kernloch = d − P, Durchgangsloch mittel nach ISO 273. Richtwerte, Herstellerangaben haben Vorrang. Eigene Werte im Rechner unter „Schraubenverbindung“.'));
+    box.appendChild(el('p', 'meta wz-quelle', 'F<sub>M</sub> und M<sub>A</sub> nach VDI 2230 mit 90 % Ausnutzung der Streckgrenze. Reibdurchmesser aus Auflage-Ø d<sub>w,min</sub> (ISO 4017/4762) und feiner Durchgangsbohrung. Kernloch = d − P, Durchgangsloch mittel nach ISO 273. Richtwerte, Herstellerangaben haben Vorrang. Eigene Werte im Rechner unter „Schraubenverbindung“.'));
     const kl = el('div', 'wz-scroll');
     kl.innerHTML = '<h3 class="wz-h3">Festigkeitsklassen</h3><table class="wz-tab"><thead><tr><th>Klasse</th><th>R<sub>m</sub> N/mm²</th><th>R<sub>e</sub> / R<sub>p0,2</sub> N/mm²</th><th></th></tr></thead><tbody>' +
       KLASSEN_TAB.map(k => `<tr><th>${k[0]}</th><td>${k[1]}</td><td>${k[2]}</td><td class="meta">${k[3]}</td></tr>`).join('') + '</tbody></table>' +
@@ -335,8 +336,8 @@
     ['B1', 'B1: Aderleitungen im Rohr auf oder in der Wand, im Kanal'], ['B2', 'B2: Mantelleitung im Rohr oder Kanal auf der Wand'],
     ['C', 'C: Mantelleitung direkt auf oder in der Wand'], ['E', 'E: Mantelleitung frei in Luft, z. B. auf gelochter Kabelpritsche']
   ];
-  const TEMP = [[10, 1.22], [15, 1.17], [20, 1.12], [25, 1.06], [30, 1], [35, 0.94], [40, 0.87], [45, 0.79], [50, 0.71], [55, 0.61], [60, 0.5]];
-  const HAEUF = [[1, 1], [2, 0.8], [3, 0.7], [4, 0.65], [5, 0.6], [6, 0.57], [7, 0.54], [8, 0.52], [9, 0.5], [12, 0.45], [16, 0.41], [20, 0.38]];
+  const TEMP = [[10, 1.22], [15, 1.17], [20, 1.12], [25, 1.06], [30, 1], [35, 0.94], [40, 0.87], [45, 0.79], [50, 0.71], [55, 0.61], [60, 0.5], [65, 0.35]];
+  const HAEUF = [[1, 1], [2, 0.8], [3, 0.7], [4, 0.65], [5, 0.6], [6, 0.57], [7, 0.54], [8, 0.52], [9, 0.5], [10, 0.48], [12, 0.45], [14, 0.43], [16, 0.41], [18, 0.39], [20, 0.38]];
   const SICHERUNG = [6, 10, 13, 16, 20, 25, 32, 35, 40, 50, 63, 80, 100, 125, 160, 200, 250];
 
   function kabel(box) {
@@ -376,7 +377,7 @@
     }
     [vSel, aSel, tSel, hSel].forEach(s => s.onchange = neu); ib.addEventListener('input', neu);
     neu();
-    box.appendChild(el('p', 'meta wz-quelle', 'Kupferleiter mit PVC-Isolierung (70 °C), Bezugstemperatur 30 °C. Richtwerte nach DIN VDE 0298-4 und DIN VDE 0100-520, Häufungsfaktoren für gebündelte Leitungen auf einer Fläche. Bei LS-Schaltern und gG-Sicherungen gilt mit I<sub>n</sub> ≤ I<sub>z</sub> auch I<sub>2</sub> ≤ 1,45 · I<sub>z</sub>. Maßgeblich ist immer die aktuelle Norm.'));
+    box.appendChild(el('p', 'meta wz-quelle', 'Kupferleiter mit PVC-Isolierung (70 °C), Dauerbetrieb, Bezugstemperatur 30 °C nach DIN VDE 0298-4 (entspricht IEC 60364-5-52). Häufungsfaktoren für Leitungen gebündelt auf der Wand, dem Fußboden oder im Rohr bzw. Kanal. Die Hausinstallations-Tabelle der Norm ist auf 25 °C bezogen und zeigt deshalb etwas höhere Werte, das Ergebnis bei gleicher Umgebungstemperatur ist dasselbe. Bei LS-Schaltern und gG-Sicherungen gilt mit I<sub>n</sub> ≤ I<sub>z</sub> auch I<sub>2</sub> ≤ 1,45 · I<sub>z</sub>. Maßgeblich ist immer die aktuelle Norm.'));
   }
 
   /* =====================================================================
@@ -384,15 +385,15 @@
      ===================================================================== */
   // Name, Gruppe, Dichte kg/dm³, E GPa, Re/Rp0,2, Rm, α 10⁻⁶/K, λ W/(m·K), c J/(kg·K), ρel Ω·mm²/m, Hinweis
   const WERKSTOFFE = [
-    ['S235JR (1.0038)', 'Stahl', 7.85, 210, 235, 360, 12, 50, 460, 0.13, 'Baustahl, gut schweißbar'],
-    ['S355J2 (1.0577)', 'Stahl', 7.85, 210, 355, 470, 12, 50, 460, 0.16, 'Baustahl höherfest'],
-    ['C45 normalgeglüht (1.0503)', 'Stahl', 7.85, 210, 340, 620, 11.5, 45, 470, 0.16, 'Vergütungsstahl, Wellen, Bolzen'],
-    ['42CrMo4 vergütet (1.7225)', 'Stahl', 7.85, 210, 750, 1000, 12, 42, 460, 0.19, 'hochfeste Wellen, Zahnräder (d 16 bis 40 mm)'],
-    ['16MnCr5 (1.7131)', 'Stahl', 7.85, 210, 590, 800, 12, 44, 460, 0.18, 'Einsatzstahl, Zahnräder, Rp nach Einsatzhärten'],
-    ['11SMnPb30 (1.0718)', 'Stahl', 7.85, 210, 300, 460, 12, 50, 460, 0.15, 'Automatenstahl, Drehteile'],
+    ['S235JR (1.0038)', 'Stahl', 7.85, 210, 235, 360, 12, 50, 460, 0.14, 'Baustahl, gut schweißbar'],
+    ['S355J2 (1.0577)', 'Stahl', 7.85, 210, 355, 470, 12, 50, 460, null, 'Baustahl höherfest'],
+    ['C45 normalgeglüht (1.0503)', 'Stahl', 7.85, 210, 340, 620, 11.5, 45, 470, null, 'Vergütungsstahl, Wellen, Bolzen'],
+    ['42CrMo4 vergütet (1.7225)', 'Stahl', 7.85, 210, 750, 1000, 12, 42, 460, null, 'hochfeste Wellen, Zahnräder (d 16 bis 40 mm)'],
+    ['16MnCr5 (1.7131)', 'Stahl', 7.85, 210, 590, 780, 12, 44, 460, null, 'Einsatzstahl, Zahnräder, Kernfestigkeit nach Einsatzhärten'],
+    ['11SMnPb30 (1.0718)', 'Stahl', 7.85, 210, null, 380, 12, 50, 460, null, 'Automatenstahl unbehandelt, Drehteile'],
     ['X5CrNi18-10 (1.4301, V2A)', 'Edelstahl', 7.9, 200, 190, 500, 16, 15, 500, 0.73, 'rostfrei, nicht magnetisch'],
     ['X2CrNiMo17-12-2 (1.4404, V4A)', 'Edelstahl', 8.0, 200, 200, 500, 16, 15, 500, 0.75, 'säurebeständig, Lebensmittel'],
-    ['EN-GJL-250 (Grauguss)', 'Gusseisen', 7.2, 110, null, 250, 10, 48, 460, 0.6, 'dämpft gut, spröde, Gehäuse'],
+    ['EN-GJL-250 (Grauguss)', 'Gusseisen', 7.2, 110, null, 250, 11, 48, 460, 0.73, 'dämpft gut, spröde, Gehäuse'],
     ['EN-GJS-400-15 (Sphäroguss)', 'Gusseisen', 7.1, 169, 250, 400, 12.5, 36, 515, 0.5, 'zäh, Gehäuse, Naben'],
     ['EN AW-1050A (Al 99,5)', 'Aluminium', 2.7, 69, 20, 65, 23.5, 229, 900, 0.028, 'Reinaluminium weich, Stromschienen'],
     ['EN AW-5754 H111 (AlMg3)', 'Aluminium', 2.66, 70, 80, 190, 24, 130, 900, 0.05, 'Bleche, seewasserbeständig'],
@@ -400,8 +401,8 @@
     ['EN AW-6082 T6 (AlSi1MgMn)', 'Aluminium', 2.7, 70, 260, 310, 23.4, 170, 900, 0.038, 'Konstruktionsprofile, Frästeile'],
     ['EN AW-7075 T6 (AlZnMgCu)', 'Aluminium', 2.81, 72, 460, 530, 23.4, 130, 870, 0.052, 'hochfest, Flugzeugbau, Formen'],
     ['Cu-ETP (Elektrolytkupfer)', 'Kupfer', 8.93, 120, 180, 240, 17, 390, 385, 0.0172, 'Leitungen, Stromschienen'],
-    ['CuZn39Pb3 (Messing)', 'Kupfer', 8.47, 96, 250, 430, 20.9, 110, 380, 0.065, 'Automatenmessing, Drehteile, Armaturen'],
-    ['CuSn8 (Zinnbronze)', 'Kupfer', 8.8, 115, 260, 390, 18.5, 62, 380, 0.13, 'Gleitlager, Federn'],
+    ['CuZn39Pb3 (Messing)', 'Kupfer', 8.47, 96, 250, 430, 20.9, 123, 380, 0.065, 'Automatenmessing, Drehteile, Armaturen'],
+    ['CuSn8 (Zinnbronze)', 'Kupfer', 8.8, 115, 260, 390, 18.5, 67, 380, 0.13, 'Gleitlager, Federn'],
     ['Titan Grade 2', 'Titan', 4.51, 105, 275, 345, 8.6, 16, 520, 0.56, 'korrosionsbeständig, Chemie'],
     ['Ti6Al4V (Grade 5)', 'Titan', 4.43, 114, 880, 950, 8.6, 6.7, 560, 1.7, 'hochfest, leicht, Medizintechnik'],
     ['PA6 (trocken)', 'Kunststoff', 1.14, 3, null, 80, 90, 0.25, 1700, null, 'Zahnräder, Rollen, nimmt Wasser auf'],

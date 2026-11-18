@@ -161,6 +161,12 @@
     LF: { s: 'LF', n: 'Auslastung (Teillast)', u: PROZ, p: [['100 %', 100], ['75 %', 75], ['50 %', 50]] }
   };
 
+  /* Neue Größen ergänzen, ohne versehentlich eine bestehende zu überschreiben */
+  function neueGroessen(neu) {
+    for (const k of Object.keys(neu)) if (k in V) throw new Error('Größe doppelt vergeben: ' + k);
+    Object.assign(V, neu);
+  }
+
   /* Formeln: y = f(x). Nach jeder anderen Größe wird numerisch aufgelöst. */
   const F = {};
   function fx(id, n, eq, y, x, f, info) { F[id] = { id, n, eq, y, x, f, info: info || '' }; }
@@ -322,7 +328,7 @@
   const A_ = [['A', 1], ['mA', 1e-3]];
   const VOLT = [['V', 1], ['kV', 1e3]];
   const NM = [['Nm', 1]];
-  Object.assign(V, {
+  neueGroessen({
     RStr: { s: 'R<sub>Str</sub>', n: 'Strangwiderstand', u: OHM },
     IY: { s: 'I<sub>Y</sub>', n: 'Leiterstrom in Stern', u: A_ },
     ID: { s: 'I<sub>Δ</sub>', n: 'Leiterstrom in Dreieck', u: A_ },
@@ -352,6 +358,7 @@
     Us_: { s: 'û', n: 'Scheitelwert', u: [['V', 1]] },
     Ud2: { s: 'U<sub>d,B2</sub>', n: 'Gleichspannung Brücke B2 (1~)', u: [['V', 1]] },
     Ud6: { s: 'U<sub>d,B6</sub>', n: 'Gleichspannung Brücke B6 (3~)', u: [['V', 1]] },
+    UL3: { s: 'U<sub>L</sub>', n: 'Außenleiterspannung Drehstrom', u: [['V', 1]], p: [['400', 400], ['230', 230], ['690', 690]] },
     U0: { s: 'U<sub>0</sub>', n: 'Spannung gegen Erde', u: [['V', 1]], p: [['230 V', 230]] },
     In: { s: 'I<sub>n</sub>', n: 'Nennstrom Schutzorgan', u: [['A', 1]], p: [['10', 10], ['13', 13], ['16', 16], ['20', 20], ['32', 32]] },
     kAus: { s: 'k', n: 'Faktor Abschaltstrom', u: OHNE, p: [['B: 5', 5], ['C: 10', 10]] },
@@ -440,7 +447,7 @@
     eta2: { s: 'η<sub>neu</sub>', n: 'Wirkungsgrad neuer Motor', u: PROZ, p: [['IE3 ca. 91,4 %', 91.4], ['IE4 ca. 93,3 %', 93.3]] },
     Walt: { s: 'W<sub>alt</sub>', n: 'Energie alter Motor pro Jahr', u: [['kWh', 3.6e6]] },
     Wneu: { s: 'W<sub>neu</sub>', n: 'Energie neuer Motor pro Jahr', u: [['kWh', 3.6e6]] },
-    dK: { s: 'ΔK', n: 'Ersparnis pro Jahr', u: [['€', 1]] },
+    dKost: { s: 'ΔK', n: 'Ersparnis pro Jahr', u: [['€', 1]] },
     Inv: { s: 'K<sub>M</sub>', n: 'Mehrpreis neuer Motor', u: [['€', 1]] },
     tA: { s: 't<sub>A</sub>', n: 'Amortisationszeit', u: [['Jahre', 1], ['Monate', 1 / 12]] }
   });
@@ -464,7 +471,7 @@
   fx('led_p', 'Verlustleistung Vorwiderstand', 'P<sub>R</sub> = (U<sub>B</sub> − U<sub>F</sub>) · I<sub>F</sub>', 'PRV', ['UB', 'UF', 'IF'], v => (v.UB - v.UF) * v.IF);
   fx('scheitel', 'Scheitelwert', 'û = √2 · U', 'Us_', ['Uw'], v => Math.SQRT2 * v.Uw);
   fx('b2', 'Brückengleichrichter B2', 'U<sub>d</sub> = 0,9 · U', 'Ud2', ['Uw'], v => 0.9 * v.Uw, 'Mittelwert ohne Glättung. Mit Glättungskondensator nahe û.');
-  fx('b6', 'Drehstrombrücke B6', 'U<sub>d</sub> = 1,35 · U', 'Ud6', ['Uw'], v => 1.35 * v.Uw, 'U ist hier die Außenleiterspannung (400 V → 540 V).');
+  fx('b6', 'Drehstrombrücke B6', 'U<sub>d</sub> = 1,35 · U<sub>L</sub>', 'Ud6', ['UL3'], v => 1.35 * v.UL3, 'Mittelwert ohne Glättung, bei 400 V also 540 V. Der Zwischenkreis eines Umrichters liegt geglättet bei ca. 560 V.');
   fx('abs_ia', 'Abschaltstrom', 'I<sub>a</sub> = k · I<sub>n</sub>', 'Ia', ['kAus', 'In'], v => v.kAus * v.In, 'LS-Schalter B: 5 · I<sub>n</sub>, C: 10 · I<sub>n</sub> (sicher unverzögert)');
   fx('abs_zs', 'Abschaltbedingung', 'Z<sub>s,max</sub> = U<sub>0</sub> / I<sub>a</sub>', 'Zsmax', ['U0', 'Ia'], v => v.U0 / v.Ia, 'Bedingung: Z<sub>s</sub> · I<sub>a</sub> ≤ U<sub>0</sub>');
   fx('abs_zl', 'Schleifenimpedanz am Ende', 'Z<sub>s</sub> = Z<sub>V</sub> + 2 · l / (κ · A)', 'Zs', ['Zn', 'l', 'kappa', 'AL'], v => v.Zn + 2 * v.l / (v.kappa * v.AL), 'Rechenwert. Leitererwärmung erhöht den Widerstand, deshalb Reserve lassen. Die Messung ersetzt die Rechnung nicht.');
@@ -515,8 +522,8 @@
   fx('l10h', 'Lebensdauer in Stunden', 'L<sub>10h</sub> = L<sub>10</sub> · 10⁶ / (60 · n)', 'L10h', ['L10', 'n'], v => v.L10 * 1e6 / v.n);
   fx('eff_alt', 'Energie alter Motor', 'W<sub>alt</sub> = P<sub>ab</sub> · LF · t / η<sub>alt</sub>', 'Walt', ['Pab', 'LF', 't', 'eta1'], v => v.Pab * v.LF * v.t / v.eta1);
   fx('eff_neu', 'Energie neuer Motor', 'W<sub>neu</sub> = P<sub>ab</sub> · LF · t / η<sub>neu</sub>', 'Wneu', ['Pab', 'LF', 't', 'eta2'], v => v.Pab * v.LF * v.t / v.eta2);
-  fx('eff_dk', 'Ersparnis pro Jahr', 'ΔK = (W<sub>alt</sub> − W<sub>neu</sub>) · k', 'dK', ['Walt', 'Wneu', 'k'], v => (v.Walt - v.Wneu) * v.k);
-  fx('eff_ta', 'Amortisationszeit', 't<sub>A</sub> = K<sub>M</sub> / ΔK', 'tA', ['Inv', 'dK'], v => v.Inv / v.dK);
+  fx('eff_dk', 'Ersparnis pro Jahr', 'ΔK = (W<sub>alt</sub> − W<sub>neu</sub>) · k', 'dKost', ['Walt', 'Wneu', 'k'], v => (v.Walt - v.Wneu) * v.k);
+  fx('eff_ta', 'Amortisationszeit', 't<sub>A</sub> = K<sub>M</sub> / ΔK', 'tA', ['Inv', 'dKost'], v => v.Inv / v.dKost);
 
   // bestehende Bereiche ergänzen
   const kz = id => KAT.find(k => k.id === id);
@@ -540,7 +547,7 @@
     { id: 'trafo', gruppe: 'grund', n: 'Transformator', d: 'Übersetzung von Spannung, Strom und Windungen, Bemessungsleistung und Kurzschlussstrom.',
       f: ['tr_u', 'tr_n', 'tr_i', 'tr_s', 'tr_ik'], bsp: { U1: 400, U2: 24, I2: 10, uk: 4, N1: 800 } },
     { id: 'halbleiter', gruppe: 'grund', n: 'LED & Gleichrichter', d: 'Vorwiderstand für LEDs, Scheitelwert und Gleichrichter B2 und B6.',
-      f: ['led', 'led_p', 'scheitel', 'b2', 'b6'], bsp: { UB: 24, UF: 2, IF: 20, Uw: 230 } },
+      f: ['led', 'led_p', 'scheitel', 'b2', 'b6'], bsp: { UB: 24, UF: 2, IF: 20, Uw: 230, UL3: 400 } },
     { id: 'hebel', gruppe: 'grund', n: 'Hebel, Flaschenzug, Feder', d: 'Hebelgesetz, Flaschenzug, schiefe Ebene mit Reibung und Federkraft.',
       f: ['hebel', 'fg', 'flaschenzug', 'hang', 'hang_n', 'fr', 'hang_zug', 'feder'], bsp: { F1: 100, l1: 500, l2: 50, m: 200, nSeil: 4, eta: 90, winkel: 15, mu: 0.15, cF: 20, sF: 15 } },
     { id: 'beschleunigt', gruppe: 'grund', n: 'Beschleunigte Bewegung', d: 'Gleichmäßig beschleunigt: Geschwindigkeit und Weg nach einer Zeit.',
@@ -565,7 +572,7 @@
   const UM = [['µm', 1e-6], ['mm', 1e-3]];
   const MASS = [['mm', 1e-3]];
   const ZEIT = [['s', 1], ['min', 60], ['ms', 1e-3]];
-  Object.assign(V, {
+  neueGroessen({
     // Passungen
     NmP: { s: 'N', n: 'Nennmaß', u: MASS, st: 7, p: [['10', 10], ['25', 25], ['40', 40], ['60', 60]] },
     ESb: { s: 'ES', n: 'Oberes Abmaß Bohrung', u: UM, neg: true, st: 6 },
@@ -576,7 +583,7 @@
     GuB: { s: 'G<sub>uB</sub>', n: 'Mindestmaß Bohrung', u: MASS, st: 7 },
     GoW: { s: 'G<sub>oW</sub>', n: 'Höchstmaß Welle', u: MASS, st: 7 },
     GuW: { s: 'G<sub>uW</sub>', n: 'Mindestmaß Welle', u: MASS, st: 7 },
-    TB: { s: 'T<sub>B</sub>', n: 'Maßtoleranz Bohrung', u: UM, st: 6 },
+    TBo: { s: 'T<sub>B</sub>', n: 'Maßtoleranz Bohrung', u: UM, st: 6 },
     TW: { s: 'T<sub>W</sub>', n: 'Maßtoleranz Welle', u: UM, st: 6 },
     Smax: { s: 'P<sub>SH</sub>', n: 'Höchstspiel (negativ = Übermaß)', u: UM, neg: true, st: 6 },
     Smin: { s: 'P<sub>SM</sub>', n: 'Mindestspiel (negativ = Übermaß)', u: UM, neg: true, st: 6 },
@@ -589,8 +596,8 @@
     muG: { s: 'μ<sub>G</sub>', n: 'Reibungszahl Gewinde', u: OHNE, p: [['geölt 0,12', 0.12], ['MoS₂ 0,08', 0.08], ['trocken 0,14', 0.14]] },
     muK: { s: 'μ<sub>K</sub>', n: 'Reibungszahl Kopfauflage', u: OHNE, p: [['geölt 0,12', 0.12], ['MoS₂ 0,08', 0.08], ['trocken 0,14', 0.14]] },
     FM: { s: 'F<sub>M</sub>', n: 'Zulässige Montagevorspannkraft', u: [['kN', 1e3], ['N', 1]] },
-    SW: { s: 'd<sub>w</sub>', n: 'Kopfauflage außen (≈ Schlüsselweite)', u: MASS, p: [['M6: 10', 10], ['M8: 13', 13], ['M10: 16', 16], ['M12: 18', 18], ['M16: 24', 24]] },
-    dhS: { s: 'd<sub>h</sub>', n: 'Durchgangsbohrung', u: MASS, p: [['M6: 6,6', 6.6], ['M8: 9', 9], ['M10: 11', 11], ['M12: 13,5', 13.5], ['M16: 17,5', 17.5]] },
+    SW: { s: 'd<sub>w</sub>', n: 'Auflagedurchmesser Kopf (Sechskant, min.)', u: MASS, p: [['M6: 8,88', 8.88], ['M8: 11,63', 11.63], ['M10: 14,63', 14.63], ['M12: 16,63', 16.63], ['M16: 22,49', 22.49]] },
+    dhS: { s: 'd<sub>h</sub>', n: 'Durchgangsbohrung (fein)', u: MASS, p: [['M6: 6,4', 6.4], ['M8: 8,4', 8.4], ['M10: 10,5', 10.5], ['M12: 13', 13], ['M16: 17', 17]] },
     DKm: { s: 'D<sub>Km</sub>', n: 'Mittlerer Reibdurchmesser Kopf', u: MASS },
     MA: { s: 'M<sub>A</sub>', n: 'Anzugsmoment', u: [['Nm', 1]] },
 
@@ -640,7 +647,7 @@
   fx('pa_gub', 'Mindestmaß Bohrung', 'G<sub>uB</sub> = N + EI', 'GuB', ['NmP', 'EIb'], v => v.NmP + v.EIb);
   fx('pa_gow', 'Höchstmaß Welle', 'G<sub>oW</sub> = N + es', 'GoW', ['NmP', 'esW'], v => v.NmP + v.esW);
   fx('pa_guw', 'Mindestmaß Welle', 'G<sub>uW</sub> = N + ei', 'GuW', ['NmP', 'eiW'], v => v.NmP + v.eiW);
-  fx('pa_tb', 'Toleranz Bohrung', 'T<sub>B</sub> = ES − EI', 'TB', ['ESb', 'EIb'], v => v.ESb - v.EIb);
+  fx('pa_tb', 'Toleranz Bohrung', 'T<sub>B</sub> = ES − EI', 'TBo', ['ESb', 'EIb'], v => v.ESb - v.EIb);
   fx('pa_tw', 'Toleranz Welle', 'T<sub>W</sub> = es − ei', 'TW', ['esW', 'eiW'], v => v.esW - v.eiW);
   fx('pa_sh', 'Höchstspiel', 'P<sub>SH</sub> = ES − ei', 'Smax', ['ESb', 'eiW'], v => v.ESb - v.eiW, 'Negativ heißt Übermaß. Beide positiv: Spielpassung, beide negativ: Übermaßpassung, sonst Übergangspassung.');
   fx('pa_sm', 'Mindestspiel', 'P<sub>SM</sub> = EI − es', 'Smin', ['EIb', 'esW'], v => v.EIb - v.esW, 'Die ISO-Abmaße für H7, g6 usw. liefert der Passungsrechner unter „Tabellen“.');
@@ -695,7 +702,7 @@
     { id: 'passung', gruppe: 'grund', n: 'Passungen & Toleranzen', d: 'Grenzmaße, Toleranzen, Höchst- und Mindestspiel. Die ISO-Abmaße holst du dir im Passungsrechner unter „Tabellen“.',
       f: ['pa_gob', 'pa_gub', 'pa_gow', 'pa_guw', 'pa_tb', 'pa_tw', 'pa_sh', 'pa_sm'], bsp: { NmP: 30, ESb: 21, EIb: 0, esW: -7, eiW: -20 } },
     { id: 'schraube', gruppe: 'grund', n: 'Schraubenverbindung', d: 'Gewindemaße, Spannungsquerschnitt, zulässige Vorspannkraft und Anzugsmoment nach VDI 2230.',
-      f: ['s_d2', 's_d3', 's_as', 's_fm', 's_dkm', 's_ma'], bsp: { DG: 10, PG: 1.5, Re: 640, nuS: 90, muG: 0.12, muK: 0.12, SW: 16, dhS: 11 } },
+      f: ['s_d2', 's_d3', 's_as', 's_fm', 's_dkm', 's_ma'], bsp: { DG: 10, PG: 1.5, Re: 640, nuS: 90, muG: 0.12, muK: 0.12, SW: 14.63, dhS: 10.5 } },
     { id: 'pid', gruppe: 'grund', n: 'PID-Regler', d: 'P-, I- und D-Anteil einzeln und zusammen. KI und KD aus Nachstell- und Vorhaltezeit.',
       f: ['reg_e', 'reg_p', 'pid_ki', 'pid_kd', 'pid_yi', 'pid_yd', 'pid_y'], bsp: { wS: 60, xI: 55, Kp: 2, Tn: 10, Tv: 1, eInt: 20, eDot: -0.5 } },
     { id: 'zn', gruppe: 'grund', n: 'Regler einstellen (Ziegler-Nichols)', d: 'Startwerte für P-, PI- und PID-Regler aus dem Schwingversuch.',
