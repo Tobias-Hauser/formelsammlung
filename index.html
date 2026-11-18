@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Formelsammlung Mechatronik</title>
 <meta name="description" content="Interaktive Formelsammlung für Mechatroniker: Gib ein, was du weißt, der Rest wird mit Rechenweg berechnet.">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <header>
@@ -17,6 +17,7 @@
     <nav>
       <button data-view="rechner" class="aktiv">Rechner</button>
       <button data-view="alle">Alle Formeln</button>
+      <button data-view="tabellen">Tabellen</button>
     </nav>
   </div>
 </header>
@@ -69,6 +70,12 @@
     </div>
     <div id="alleListe" class="alle"></div>
   </section>
+
+  <!-- Tabellen & Werkzeuge -->
+  <section id="view-tabellen" hidden>
+    <div id="wzNav" class="wz-nav"></div>
+    <div id="werkzeug" class="karte wz-karte"></div>
+  </section>
 </main>
 
 <footer class="wrap">
@@ -77,7 +84,8 @@
 </footer>
 
 <div class="toast" id="toast"></div>
-<script src="formeln.js?v=2"></script>
-<script src="app.js?v=2"></script>
+<script src="formeln.js?v=3"></script>
+<script src="werkzeuge.js?v=3"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

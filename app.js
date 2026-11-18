@@ -6,6 +6,8 @@
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; };
   const ohneTags = s => s.replace(/<[^>]+>/g, '');
   const GRUPPEN = { praxis: 'Praxis-Aufgaben', grund: 'Grundlagen' };
+  const WZ = window.WERKZEUG;
+  const startHash = location.hash;
 
   let katId = KAT[0].id;
   let eingaben = {};   // { katId: { var: 'Rohtext' } }
@@ -33,15 +35,16 @@
     const x = Number(s);
     return isFinite(x) ? x : null;
   }
-  function fmt(x) {
+  function fmt(x, st) {
     if (x === 0) return '0';
     const a = Math.abs(x);
+    if (a < 1e-9) return '0';
     if (a >= 1e9 || a < 1e-4) return x.toExponential(3).replace('.', ',');
-    if (a >= 1000) return String(Math.round(x));
-    return Number(x.toPrecision(4)).toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 10 });
+    if (a >= 1000 && !st) return String(Math.round(x));
+    return Number(x.toPrecision(st || 4)).toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 10 });
   }
   const roh = x => String(x).replace('.', ',');
-  const mitEinheit = (wert, v) => { const u = einheitText(v); return fmt(wert / faktor(v)) + (u ? ' ' + u : ''); };
+  const mitEinheit = (wert, v) => { const u = einheitText(v); return fmt(wert / faktor(v), V[v].st) + (u ? ' ' + u : ''); };
 
   /* ---------- Liste der Bereiche ---------- */
   function passt(k, q) {
@@ -67,6 +70,18 @@
         const anzahl = Object.keys(eingaben[k.id] || {}).length;
         if (anzahl) b.appendChild(el('span', 'zahl', String(anzahl)));
         b.onclick = () => oeffne(k.id);
+        liste.appendChild(b);
+      }
+    }
+    const og = el('optgroup'); og.label = 'Tabellen & Werkzeuge';
+    WZ.liste.forEach(w => { const o = el('option', '', w.n); o.value = 'tab:' + w.id; og.appendChild(o); });
+    wahl.appendChild(og);
+    const ws = WZ.liste.filter(w => !q || q.toLowerCase().split(/\s+/).every(t => (w.n + ' ' + w.d + ' ' + w.s).toLowerCase().includes(t)));
+    if (ws.length) {
+      liste.appendChild(el('h4', '', 'Tabellen & Werkzeuge'));
+      for (const w of ws) {
+        const b = el('button', 'kat wz-link', w.n + ' <span class="pfeil">→</span>');
+        b.onclick = () => zeigeView('tabellen', w.id);
         liste.appendChild(b);
       }
     }
@@ -167,7 +182,7 @@
       } else if (v in r.w) {
         karte.classList.add('berechnet');
         her.innerHTML = 'berechnet: ' + F[r.quelle[v]].eq;
-        if (aktiv !== inp) inp.value = fmt(r.w[v] / faktor(v));
+        if (aktiv !== inp) inp.value = fmt(r.w[v] / faktor(v), V[v].st);
       } else {
         her.textContent = '';
         if (aktiv !== inp) inp.value = '';
@@ -311,17 +326,31 @@
     if (!box.children.length) box.appendChild(el('p', 'meta', 'Nichts gefunden.'));
   }
 
-  function zeigeView(name) {
+  function zeigeView(name, wid) {
     document.querySelectorAll('nav button').forEach(b => b.classList.toggle('aktiv', b.dataset.view === name));
-    $('#view-rechner').hidden = name !== 'rechner';
-    $('#view-alle').hidden = name !== 'alle';
-    if (name === 'alle') renderAlle();
+    for (const v of ['rechner', 'alle', 'tabellen']) $('#view-' + v).hidden = name !== v;
+    if (name === 'alle') { renderAlle(); history.replaceState(null, '', '#alle'); }
+    if (name === 'tabellen') { const id = WZ.zeige(wid); history.replaceState(null, '', '#tab-' + id); window.scrollTo({ top: 0 }); }
+    if (name === 'rechner') speichern();
   }
+
+  /* Schnittstelle für die Werkzeuge */
+  window.APP = {
+    hash: h => history.replaceState(null, '', '#' + h),
+    uebernehmen: (id, werte) => {
+      eingaben[id] = {}; einheiten[id] = {};
+      for (const [v, x] of Object.entries(werte)) eingaben[id][v] = roh(Number(x.toPrecision(10)));
+      zeigeView('rechner'); oeffne(id); window.scrollTo({ top: 0 });
+    }
+  };
 
   /* ---------- Start ---------- */
   document.querySelectorAll('nav button').forEach(b => b.onclick = () => zeigeView(b.dataset.view));
   $('#suche').addEventListener('input', renderListe);
-  $('#katWahl').addEventListener('change', e => oeffne(e.target.value));
+  $('#katWahl').addEventListener('change', e => {
+    const w = e.target.value;
+    if (w.startsWith('tab:')) { e.target.value = katId; zeigeView('tabellen', w.slice(4)); } else oeffne(w);
+  });
   $('#sucheAlle').addEventListener('input', renderAlle);
   $('#drucken').onclick = () => window.print();
   $('#beispiel').onclick = () => {
@@ -339,4 +368,12 @@
   laden();
   renderListe();
   renderKat();
+  window.addEventListener('hashchange', () => {
+    const h = location.hash;
+    if (h.startsWith('#tab-')) zeigeView('tabellen', h.slice(5));
+    else if (h === '#alle') zeigeView('alle');
+    else if (KAT.some(k => k.id === h.slice(1).split('&')[0])) { laden(); zeigeView('rechner'); renderListe(); renderKat(); }
+  });
+  if (startHash.startsWith('#tab-')) zeigeView('tabellen', startHash.slice(5));
+  else if (startHash === '#alle' || startHash === '#tabellen') zeigeView(startHash.slice(1));
 })();

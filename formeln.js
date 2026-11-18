@@ -560,10 +560,155 @@
     { id: 'lager', gruppe: 'grund', n: 'Wälzlager-Lebensdauer', d: 'Nominelle Lebensdauer L10 in Umdrehungen und Betriebsstunden.',
       f: ['l10', 'l10h'], bsp: { Cdyn: 30, Plag: 3, pExp: 3, n: 1450 } }
   );
+
+  /* ---------- Erweiterung 2: Passungen, Schrauben, PID, Digitaltechnik ---------- */
+  const UM = [['µm', 1e-6], ['mm', 1e-3]];
+  const MASS = [['mm', 1e-3]];
+  const ZEIT = [['s', 1], ['min', 60], ['ms', 1e-3]];
+  Object.assign(V, {
+    // Passungen
+    NmP: { s: 'N', n: 'Nennmaß', u: MASS, st: 7, p: [['10', 10], ['25', 25], ['40', 40], ['60', 60]] },
+    ESb: { s: 'ES', n: 'Oberes Abmaß Bohrung', u: UM, neg: true, st: 6 },
+    EIb: { s: 'EI', n: 'Unteres Abmaß Bohrung', u: UM, neg: true, st: 6 },
+    esW: { s: 'es', n: 'Oberes Abmaß Welle', u: UM, neg: true, st: 6 },
+    eiW: { s: 'ei', n: 'Unteres Abmaß Welle', u: UM, neg: true, st: 6 },
+    GoB: { s: 'G<sub>oB</sub>', n: 'Höchstmaß Bohrung', u: MASS, st: 7 },
+    GuB: { s: 'G<sub>uB</sub>', n: 'Mindestmaß Bohrung', u: MASS, st: 7 },
+    GoW: { s: 'G<sub>oW</sub>', n: 'Höchstmaß Welle', u: MASS, st: 7 },
+    GuW: { s: 'G<sub>uW</sub>', n: 'Mindestmaß Welle', u: MASS, st: 7 },
+    TB: { s: 'T<sub>B</sub>', n: 'Maßtoleranz Bohrung', u: UM, st: 6 },
+    TW: { s: 'T<sub>W</sub>', n: 'Maßtoleranz Welle', u: UM, st: 6 },
+    Smax: { s: 'P<sub>SH</sub>', n: 'Höchstspiel (negativ = Übermaß)', u: UM, neg: true, st: 6 },
+    Smin: { s: 'P<sub>SM</sub>', n: 'Mindestspiel (negativ = Übermaß)', u: UM, neg: true, st: 6 },
+
+    // Schrauben
+    d2S: { s: 'd<sub>2</sub>', n: 'Flankendurchmesser', u: MASS },
+    d3S: { s: 'd<sub>3</sub>', n: 'Kerndurchmesser', u: MASS },
+    AsS: { s: 'A<sub>S</sub>', n: 'Spannungsquerschnitt', u: [['mm²', 1e-6]] },
+    nuS: { s: 'ν', n: 'Ausnutzung der Streckgrenze', u: PROZ, p: [['90 % (VDI 2230)', 90]] },
+    muG: { s: 'μ<sub>G</sub>', n: 'Reibungszahl Gewinde', u: OHNE, p: [['geölt 0,12', 0.12], ['MoS₂ 0,08', 0.08], ['trocken 0,14', 0.14]] },
+    muK: { s: 'μ<sub>K</sub>', n: 'Reibungszahl Kopfauflage', u: OHNE, p: [['geölt 0,12', 0.12], ['MoS₂ 0,08', 0.08], ['trocken 0,14', 0.14]] },
+    FM: { s: 'F<sub>M</sub>', n: 'Zulässige Montagevorspannkraft', u: [['kN', 1e3], ['N', 1]] },
+    SW: { s: 'd<sub>w</sub>', n: 'Kopfauflage außen (≈ Schlüsselweite)', u: MASS, p: [['M6: 10', 10], ['M8: 13', 13], ['M10: 16', 16], ['M12: 18', 18], ['M16: 24', 24]] },
+    dhS: { s: 'd<sub>h</sub>', n: 'Durchgangsbohrung', u: MASS, p: [['M6: 6,6', 6.6], ['M8: 9', 9], ['M10: 11', 11], ['M12: 13,5', 13.5], ['M16: 17,5', 17.5]] },
+    DKm: { s: 'D<sub>Km</sub>', n: 'Mittlerer Reibdurchmesser Kopf', u: MASS },
+    MA: { s: 'M<sub>A</sub>', n: 'Anzugsmoment', u: [['Nm', 1]] },
+
+    // PID-Regler
+    Tn: { s: 'T<sub>n</sub>', n: 'Nachstellzeit', u: ZEIT },
+    Tv: { s: 'T<sub>v</sub>', n: 'Vorhaltezeit', u: ZEIT },
+    KI: { s: 'K<sub>I</sub>', n: 'Integrierbeiwert', u: [['1/s', 1], ['1/min', 1 / 60]] },
+    KD: { s: 'K<sub>D</sub>', n: 'Differenzierbeiwert', u: ZEIT },
+    eInt: { s: '∫e dt', n: 'Aufsummierte Regelabweichung', u: [['s', 1], ['min', 60]], neg: true },
+    eDot: { s: 'de/dt', n: 'Änderung der Regelabweichung', u: [['1/s', 1], ['1/min', 1 / 60]], neg: true },
+    yI: { s: 'y<sub>I</sub>', n: 'I-Anteil', u: OHNE, neg: true },
+    yD: { s: 'y<sub>D</sub>', n: 'D-Anteil', u: OHNE, neg: true },
+    yPID: { s: 'y', n: 'Stellgröße PID gesamt', u: OHNE, neg: true },
+    Kkr: { s: 'K<sub>krit</sub>', n: 'Kritische Verstärkung (Dauerschwingung)', u: OHNE },
+    Tkr: { s: 'T<sub>krit</sub>', n: 'Periodendauer der Dauerschwingung', u: ZEIT },
+    Ks: { s: 'K<sub>S</sub>', n: 'Streckenverstärkung (Δx / Δy)', u: OHNE },
+    Tu: { s: 'T<sub>u</sub>', n: 'Verzugszeit (Wendetangente)', u: ZEIT },
+    Tg: { s: 'T<sub>g</sub>', n: 'Ausgleichszeit (Wendetangente)', u: ZEIT },
+    rTu: { s: 'T<sub>u</sub>/T<sub>g</sub>', n: 'Regelbarkeit (< 0,1 gut, > 0,3 schwierig)', u: OHNE },
+    KpP: { s: 'K<sub>P</sub> (P)', n: 'Einstellung P-Regler', u: OHNE },
+    KpPI: { s: 'K<sub>P</sub> (PI)', n: 'Einstellung PI-Regler', u: OHNE },
+    TnPI: { s: 'T<sub>n</sub> (PI)', n: 'Nachstellzeit PI-Regler', u: ZEIT },
+    KpPID: { s: 'K<sub>P</sub> (PID)', n: 'Einstellung PID-Regler', u: OHNE },
+    TnPID: { s: 'T<sub>n</sub> (PID)', n: 'Nachstellzeit PID-Regler', u: ZEIT },
+    TvPID: { s: 'T<sub>v</sub> (PID)', n: 'Vorhaltezeit PID-Regler', u: ZEIT },
+
+    // Digitaltechnik
+    nBit: { s: 'n', n: 'Auflösung', u: [['bit', 1]], p: [['8', 8], ['12', 12], ['15 (S7)', 15], ['16', 16]] },
+    Zst: { s: 'Z', n: 'Anzahl Stufen', u: OHNE },
+    UFS: { s: 'U<sub>FS</sub>', n: 'Messbereich (Endwert)', u: [['V', 1], ['mV', 1e-3]], p: [['10 V', 10], ['5 V', 5], ['3,3 V', 3.3]] },
+    LSB: { s: 'U<sub>LSB</sub>', n: 'Kleinster Schritt (1 LSB)', u: [['mV', 1e-3], ['V', 1], ['µV', 1e-6]] },
+    qF: { s: 'q', n: 'Max. Quantisierungsfehler', u: [['mV', 1e-3], ['V', 1], ['µV', 1e-6]] },
+    fMax: { s: 'f<sub>max</sub>', n: 'Höchste Signalfrequenz', u: [['Hz', 1], ['kHz', 1e3]] },
+    fAmin: { s: 'f<sub>A,min</sub>', n: 'Mindest-Abtastrate (Nyquist)', u: [['Hz', 1], ['kHz', 1e3]] },
+    fAbt: { s: 'f<sub>A</sub>', n: 'Gewählte Abtastrate', u: [['Hz', 1], ['kHz', 1e3]] },
+    nKan: { s: 'k', n: 'Anzahl Kanäle', u: OHNE },
+    DR: { s: 'D', n: 'Datenrate', u: [['kbit/s', 1e3], ['bit/s', 1], ['Mbit/s', 1e6]] },
+    Baud: { s: 'B', n: 'Baudrate', u: [['Bd', 1], ['kBd', 1e3]], p: [['9600', 9600], ['19200', 19200], ['115200', 115200]] },
+    bitsZ: { s: 'b', n: 'Bits pro Zeichen', u: OHNE, p: [['8N1 = 10', 10], ['8E1 = 11', 11]] },
+    nByte: { s: 'N', n: 'Anzahl Zeichen (Bytes)', u: OHNE },
+    tUe: { s: 't<sub>Ü</sub>', n: 'Übertragungszeit', u: [['ms', 1e-3], ['s', 1]] }
+  });
+  V.Re.p = [['S235', 235], ['S355', 355], ['8.8', 640], ['10.9', 940], ['12.9', 1100]];
+
+  // Passungen
+  fx('pa_gob', 'Höchstmaß Bohrung', 'G<sub>oB</sub> = N + ES', 'GoB', ['NmP', 'ESb'], v => v.NmP + v.ESb);
+  fx('pa_gub', 'Mindestmaß Bohrung', 'G<sub>uB</sub> = N + EI', 'GuB', ['NmP', 'EIb'], v => v.NmP + v.EIb);
+  fx('pa_gow', 'Höchstmaß Welle', 'G<sub>oW</sub> = N + es', 'GoW', ['NmP', 'esW'], v => v.NmP + v.esW);
+  fx('pa_guw', 'Mindestmaß Welle', 'G<sub>uW</sub> = N + ei', 'GuW', ['NmP', 'eiW'], v => v.NmP + v.eiW);
+  fx('pa_tb', 'Toleranz Bohrung', 'T<sub>B</sub> = ES − EI', 'TB', ['ESb', 'EIb'], v => v.ESb - v.EIb);
+  fx('pa_tw', 'Toleranz Welle', 'T<sub>W</sub> = es − ei', 'TW', ['esW', 'eiW'], v => v.esW - v.eiW);
+  fx('pa_sh', 'Höchstspiel', 'P<sub>SH</sub> = ES − ei', 'Smax', ['ESb', 'eiW'], v => v.ESb - v.eiW, 'Negativ heißt Übermaß. Beide positiv: Spielpassung, beide negativ: Übermaßpassung, sonst Übergangspassung.');
+  fx('pa_sm', 'Mindestspiel', 'P<sub>SM</sub> = EI − es', 'Smin', ['EIb', 'esW'], v => v.EIb - v.esW, 'Die ISO-Abmaße für H7, g6 usw. liefert der Passungsrechner unter „Tabellen“.');
+
+  // Schrauben
+  fx('s_d2', 'Flankendurchmesser', 'd<sub>2</sub> = d − 0,6495 · P', 'd2S', ['DG', 'PG'], v => v.DG - 0.649519 * v.PG, 'Metrisches ISO-Gewinde.');
+  fx('s_d3', 'Kerndurchmesser', 'd<sub>3</sub> = d − 1,2269 · P', 'd3S', ['DG', 'PG'], v => v.DG - 1.226869 * v.PG);
+  fx('s_as', 'Spannungsquerschnitt', 'A<sub>S</sub> = π/4 · ((d<sub>2</sub> + d<sub>3</sub>) / 2)²', 'AsS', ['d2S', 'd3S'], v => PI / 4 * Math.pow((v.d2S + v.d3S) / 2, 2));
+  fx('s_fm', 'Zulässige Montagevorspannkraft', 'F<sub>M</sub> = A<sub>S</sub> · ν · R<sub>p0,2</sub> / √(1 + 3 · [1,5 · d<sub>2</sub>/d<sub>S</sub> · (P/(π · d<sub>2</sub>) + 1,155 · μ<sub>G</sub>)]²)', 'FM',
+    ['AsS', 'nuS', 'Re', 'd2S', 'd3S', 'PG', 'muG'], v => {
+      const dS = (v.d2S + v.d3S) / 2;
+      const k = 1.5 * v.d2S / dS * (v.PG / (PI * v.d2S) + 1.155 * v.muG);
+      return v.AsS * v.nuS * v.Re / Math.sqrt(1 + 3 * k * k);
+    }, 'Nach VDI 2230: Zug und Torsion beim Anziehen zusammen, d<sub>S</sub> = (d<sub>2</sub> + d<sub>3</sub>)/2, R<sub>p0,2</sub> = Streckgrenze der Festigkeitsklasse.');
+  fx('s_dkm', 'Reibdurchmesser Kopfauflage', 'D<sub>Km</sub> = (d<sub>w</sub> + d<sub>h</sub>) / 2', 'DKm', ['SW', 'dhS'], v => (v.SW + v.dhS) / 2);
+  fx('s_ma', 'Anzugsmoment', 'M<sub>A</sub> = F<sub>M</sub> · (0,16 · P + 0,58 · d<sub>2</sub> · μ<sub>G</sub> + D<sub>Km</sub>/2 · μ<sub>K</sub>)', 'MA',
+    ['FM', 'PG', 'd2S', 'muG', 'DKm', 'muK'], v => v.FM * (0.16 * v.PG + 0.58 * v.d2S * v.muG + v.DKm / 2 * v.muK),
+    'Richtwert. Herstellerangaben und Tabellen nach VDI 2230 haben Vorrang. Fertige Werte M3 bis M30 unter „Tabellen“.');
+
+  // PID
+  fx('pid_ki', 'Integrierbeiwert', 'K<sub>I</sub> = K<sub>P</sub> / T<sub>n</sub>', 'KI', ['Kp', 'Tn'], v => v.Kp / v.Tn);
+  fx('pid_kd', 'Differenzierbeiwert', 'K<sub>D</sub> = K<sub>P</sub> · T<sub>v</sub>', 'KD', ['Kp', 'Tv'], v => v.Kp * v.Tv);
+  fx('pid_yi', 'I-Anteil', 'y<sub>I</sub> = K<sub>I</sub> · ∫e dt', 'yI', ['KI', 'eInt'], v => v.KI * v.eInt, 'Der I-Anteil wächst, solange eine Regelabweichung da ist, und beseitigt sie dadurch ganz.');
+  fx('pid_yd', 'D-Anteil', 'y<sub>D</sub> = K<sub>D</sub> · de/dt', 'yD', ['KD', 'eDot'], v => v.KD * v.eDot, 'Der D-Anteil reagiert auf schnelle Änderungen und dämpft das Überschwingen.');
+  fx('pid_y', 'PID-Regler (Parallelform)', 'y = K<sub>P</sub> · e + K<sub>I</sub> · ∫e dt + K<sub>D</sub> · de/dt', 'yPID', ['yP', 'yI', 'yD'], v => v.yP + v.yI + v.yD,
+    'Gleichwertig: y = K<sub>P</sub> · (e + 1/T<sub>n</sub> · ∫e dt + T<sub>v</sub> · de/dt).');
+  // Ziegler-Nichols Schwingversuch
+  fx('zn_p', 'P-Regler (Schwingversuch)', 'K<sub>P</sub> = 0,5 · K<sub>krit</sub>', 'KpP', ['Kkr'], v => 0.5 * v.Kkr, 'Nur P-Anteil, K<sub>P</sub> erhöhen, bis der Kreis gleichmäßig schwingt. Das ist K<sub>krit</sub>, die Periode ist T<sub>krit</sub>.');
+  fx('zn_pi_k', 'PI-Regler (Schwingversuch)', 'K<sub>P</sub> = 0,45 · K<sub>krit</sub>', 'KpPI', ['Kkr'], v => 0.45 * v.Kkr);
+  fx('zn_pi_t', 'PI-Nachstellzeit (Schwingversuch)', 'T<sub>n</sub> = 0,85 · T<sub>krit</sub>', 'TnPI', ['Tkr'], v => 0.85 * v.Tkr);
+  fx('zn_pid_k', 'PID-Regler (Schwingversuch)', 'K<sub>P</sub> = 0,6 · K<sub>krit</sub>', 'KpPID', ['Kkr'], v => 0.6 * v.Kkr);
+  fx('zn_pid_n', 'PID-Nachstellzeit (Schwingversuch)', 'T<sub>n</sub> = 0,5 · T<sub>krit</sub>', 'TnPID', ['Tkr'], v => 0.5 * v.Tkr);
+  fx('zn_pid_v', 'PID-Vorhaltezeit (Schwingversuch)', 'T<sub>v</sub> = 0,125 · T<sub>krit</sub>', 'TvPID', ['Tkr'], v => 0.125 * v.Tkr);
+  // Ziegler-Nichols Sprungantwort
+  fx('wt_r', 'Regelbarkeit der Strecke', 'T<sub>u</sub> / T<sub>g</sub>', 'rTu', ['Tu', 'Tg'], v => v.Tu / v.Tg, 'Unter 0,1 gut regelbar, 0,1 bis 0,3 noch regelbar, über 0,3 schwierig.');
+  fx('wt_p', 'P-Regler (Sprungantwort)', 'K<sub>P</sub> = T<sub>g</sub> / (K<sub>S</sub> · T<sub>u</sub>)', 'KpP', ['Tg', 'Ks', 'Tu'], v => v.Tg / (v.Ks * v.Tu), 'Sprung auf die Strecke geben, Wendetangente anlegen, T<sub>u</sub> und T<sub>g</sub> ablesen.');
+  fx('wt_pi_k', 'PI-Regler (Sprungantwort)', 'K<sub>P</sub> = 0,9 · T<sub>g</sub> / (K<sub>S</sub> · T<sub>u</sub>)', 'KpPI', ['Tg', 'Ks', 'Tu'], v => 0.9 * v.Tg / (v.Ks * v.Tu));
+  fx('wt_pi_t', 'PI-Nachstellzeit (Sprungantwort)', 'T<sub>n</sub> = 3,33 · T<sub>u</sub>', 'TnPI', ['Tu'], v => 3.33 * v.Tu);
+  fx('wt_pid_k', 'PID-Regler (Sprungantwort)', 'K<sub>P</sub> = 1,2 · T<sub>g</sub> / (K<sub>S</sub> · T<sub>u</sub>)', 'KpPID', ['Tg', 'Ks', 'Tu'], v => 1.2 * v.Tg / (v.Ks * v.Tu));
+  fx('wt_pid_n', 'PID-Nachstellzeit (Sprungantwort)', 'T<sub>n</sub> = 2 · T<sub>u</sub>', 'TnPID', ['Tu'], v => 2 * v.Tu);
+  fx('wt_pid_v', 'PID-Vorhaltezeit (Sprungantwort)', 'T<sub>v</sub> = 0,5 · T<sub>u</sub>', 'TvPID', ['Tu'], v => 0.5 * v.Tu);
+
+  // Digitaltechnik
+  fx('dg_z', 'Anzahl Stufen', 'Z = 2<sup>n</sup>', 'Zst', ['nBit'], v => Math.pow(2, v.nBit), 'Ein S7-Analogwert hat 15 bit plus Vorzeichen, Nennbereich 0 bis 27648.');
+  fx('dg_lsb', 'Auflösung eines Wandlers', 'U<sub>LSB</sub> = U<sub>FS</sub> / 2<sup>n</sup>', 'LSB', ['UFS', 'nBit'], v => v.UFS / Math.pow(2, v.nBit));
+  fx('dg_q', 'Quantisierungsfehler', 'q = U<sub>LSB</sub> / 2', 'qF', ['LSB'], v => v.LSB / 2);
+  fx('dg_nyq', 'Abtasttheorem (Nyquist)', 'f<sub>A,min</sub> = 2 · f<sub>max</sub>', 'fAmin', ['fMax'], v => 2 * v.fMax, 'In der Praxis lieber 5 bis 10 mal so schnell abtasten.');
+  fx('dg_dr', 'Datenrate', 'D = n · f<sub>A</sub> · k', 'DR', ['nBit', 'fAbt', 'nKan'], v => v.nBit * v.fAbt * v.nKan);
+  fx('dg_ser', 'Übertragungszeit seriell', 't<sub>Ü</sub> = N · b / B', 'tUe', ['nByte', 'bitsZ', 'Baud'], v => v.nByte * v.bitsZ / v.Baud, '8N1 heißt 1 Startbit, 8 Datenbits, 1 Stoppbit, also 10 Bit pro Zeichen.');
+
+  KAT.push(
+    { id: 'passung', gruppe: 'grund', n: 'Passungen & Toleranzen', d: 'Grenzmaße, Toleranzen, Höchst- und Mindestspiel. Die ISO-Abmaße holst du dir im Passungsrechner unter „Tabellen“.',
+      f: ['pa_gob', 'pa_gub', 'pa_gow', 'pa_guw', 'pa_tb', 'pa_tw', 'pa_sh', 'pa_sm'], bsp: { NmP: 30, ESb: 21, EIb: 0, esW: -7, eiW: -20 } },
+    { id: 'schraube', gruppe: 'grund', n: 'Schraubenverbindung', d: 'Gewindemaße, Spannungsquerschnitt, zulässige Vorspannkraft und Anzugsmoment nach VDI 2230.',
+      f: ['s_d2', 's_d3', 's_as', 's_fm', 's_dkm', 's_ma'], bsp: { DG: 10, PG: 1.5, Re: 640, nuS: 90, muG: 0.12, muK: 0.12, SW: 16, dhS: 11 } },
+    { id: 'pid', gruppe: 'grund', n: 'PID-Regler', d: 'P-, I- und D-Anteil einzeln und zusammen. KI und KD aus Nachstell- und Vorhaltezeit.',
+      f: ['reg_e', 'reg_p', 'pid_ki', 'pid_kd', 'pid_yi', 'pid_yd', 'pid_y'], bsp: { wS: 60, xI: 55, Kp: 2, Tn: 10, Tv: 1, eInt: 20, eDot: -0.5 } },
+    { id: 'zn', gruppe: 'grund', n: 'Regler einstellen (Ziegler-Nichols)', d: 'Startwerte für P-, PI- und PID-Regler aus dem Schwingversuch.',
+      f: ['zn_p', 'zn_pi_k', 'zn_pi_t', 'zn_pid_k', 'zn_pid_n', 'zn_pid_v'], bsp: { Kkr: 8, Tkr: 20 } },
+    { id: 'wende', gruppe: 'grund', n: 'Regler einstellen (Sprungantwort)', d: 'Startwerte nach Ziegler-Nichols aus Verzugszeit, Ausgleichszeit und Streckenverstärkung.',
+      f: ['wt_r', 'wt_p', 'wt_pi_k', 'wt_pi_t', 'wt_pid_k', 'wt_pid_n', 'wt_pid_v'], bsp: { Ks: 2, Tu: 5, Tg: 60 } },
+    { id: 'digital', gruppe: 'grund', n: 'Digitaltechnik & Wandler', d: 'Auflösung von A/D-Wandlern, Quantisierung, Abtastrate, Datenrate und serielle Übertragung. Zahlensysteme unter „Tabellen“.',
+      f: ['dg_z', 'dg_lsb', 'dg_q', 'dg_nyq', 'dg_dr', 'dg_ser'], bsp: { nBit: 12, UFS: 10, fMax: 1000, fAbt: 5000, nKan: 4, Baud: 9600, bitsZ: 10, nByte: 100 } }
+  );
   const REIHE = ['band', 'zuleitung', 'abschaltung', 'hubzylinder', 'erwaermen', 'energiekosten', 'effizienz',
     'gleich', 'widerstand', 'leitung', 'wechsel', 'dreh', 'sterndreieck', 'kompensation', 'kond', 'rlc', 'trafo', 'halbleiter', 'motor',
-    'mech', 'beschleunigt', 'hebel', 'drehbew', 'hochlauf', 'getriebe', 'zahnrad', 'festigkeit', 'biegung', 'zerspanung',
-    'zylinder', 'pumpe', 'waerme', 'sensor', 'regelung', 'kennzahlen', 'lager'];
+    'mech', 'beschleunigt', 'hebel', 'drehbew', 'hochlauf', 'getriebe', 'zahnrad', 'festigkeit', 'biegung', 'zerspanung', 'passung', 'schraube',
+    'zylinder', 'pumpe', 'waerme', 'sensor', 'digital', 'regelung', 'pid', 'zn', 'wende', 'kennzahlen', 'lager'];
   KAT.sort((a, b) => REIHE.indexOf(a.id) - REIHE.indexOf(b.id));
 
   /* ---------- Löser ---------- */

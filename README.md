@@ -23,7 +23,7 @@ Im Tabellenbuch sucht man erst die richtige Formel, stellt sie dann um und rechn
 
 ## Inhalt
 
-**157 Formeln in 36 Bereichen.**
+**195 Formeln in 42 Bereichen, dazu 5 Tabellen und Werkzeuge.**
 
 **Praxis-Aufgaben** (mehrere Bereiche kombiniert)
 
@@ -42,12 +42,22 @@ Im Tabellenbuch sucht man erst die richtige Formel, stellt sie dann um und rechn
 | Gebiet | Bereiche |
 |---|---|
 | Elektrotechnik | Gleichstrom & Ohm · Widerstandsschaltungen · Leitung & Spannungsfall · Wechselstrom 1~ · Drehstrom 3~ · Stern & Dreieck · Blindstromkompensation · Kondensator & Spule (mit Ladekurve) · Schwingkreis & RLC · Transformator · LED & Gleichrichter · Drehstrommotor |
-| Mechanik | Kraft & Bewegung · Beschleunigte Bewegung · Hebel, Flaschenzug, schiefe Ebene, Feder · Drehbewegung · Massenträgheit & Hochlauf · Getriebe & Riementrieb · Zahnrad & Gewindespindel · Festigkeit · Biegung, Torsion, Pressung · Zerspanung & Gewinde |
+| Mechanik | Kraft & Bewegung · Beschleunigte Bewegung · Hebel, Flaschenzug, schiefe Ebene, Feder · Drehbewegung · Massenträgheit & Hochlauf · Getriebe & Riementrieb · Zahnrad & Gewindespindel · Festigkeit · Biegung, Torsion, Pressung · Zerspanung & Gewinde · Passungen & Toleranzen · Schraubenverbindung (Vorspannkraft, Anzugsmoment) |
 | Fluidtechnik & Wärme | Pneumatik & Hydraulik · Hydraulikpumpe & Druckluft · Wärme & Temperatur |
-| Automatisierung | Sensorik & SPS (4…20 mA, 0…10 V, S7-Analogwert, PT100/PT1000, Drehgeber) · Regelungstechnik (P-Regler, PT1) |
+| Automatisierung | Sensorik & SPS (4…20 mA, 0…10 V, S7-Analogwert, PT100/PT1000, Drehgeber) · Digitaltechnik & Wandler · Regelungstechnik (P-Regler, PT1) · PID-Regler · Reglereinstellung nach Ziegler-Nichols (Schwingversuch und Sprungantwort) |
 | Instandhaltung | Kennzahlen (MTBF, MTTR, Verfügbarkeit, OEE) · Wälzlager-Lebensdauer L10h |
 
 Unter **„Alle Formeln“** gibt es die komplette Sammlung zum Durchsuchen und Ausdrucken.
+
+**Tabellen & Werkzeuge**
+
+| Werkzeug | Was es kann |
+|---|---|
+| Passungsrechner ISO 286 | Abmaße, Grenzmaße, Spiel oder Übermaß für H7/g6, H7/k6, H7/s6 und viele mehr, mit Bild der Toleranzfelder |
+| Zahlensysteme | Dezimal, Hex, Binär, Oktal, BCD, Gray-Code, Zweierkomplement, REAL (IEEE 754), Bits zum Anklicken |
+| Schrauben M3 bis M30 | Gewindemaße, Kernloch, Durchgangsloch, Schlüsselweiten, Vorspannkraft und Anzugsmoment je Festigkeitsklasse |
+| Kabelbelastbarkeit | Strombelastbarkeit nach Verlegeart, Temperatur und Häufung, passende Sicherung und Mindestquerschnitt |
+| Werkstoffkennwerte | Dichte, E-Modul, Festigkeit, Ausdehnung, Wärmeleitung, el. Widerstand für Stahl, Alu, Kupfer, Titan, Kunststoffe |
 
 ## Wie es funktioniert
 
@@ -62,6 +72,7 @@ Intern wird alles in SI-Einheiten gerechnet. Reines HTML, CSS und JavaScript, ke
 ```
 formeln.js   Größen, Einheiten, Formeln, Bereiche und der Löser
 app.js       Oberfläche
+werkzeuge.js Tabellen und Werkzeuge
 style.css    Design (hell und dunkel)
 ```
 
